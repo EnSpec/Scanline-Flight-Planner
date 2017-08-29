@@ -2,6 +2,8 @@ import LonLatMath as llmath
 import numpy as np
 import time
 import Spectrometer
+import KMLParse
+import SHPParse
 
 
 class Edge(object):
@@ -88,8 +90,8 @@ class Edge(object):
             prettyS, prettyE, self.bearing, self.length)
 
 class ScanArea(object):
-    """Class to represent the area being scanned. Works best with for convex 
-    areas.
+    """Represents a single, continuous area of land to be scanned.
+    Stored internally as a list of coordinates
     """
     def __init__(self,home,perimeter,spectrometer=None,alt = None,bearing=None):
         self._home = home
@@ -99,6 +101,9 @@ class ScanArea(object):
         self._coords = []
         self._alt = alt
         self._spectrometer = spectrometer
+    
+    def setHome(self,home):
+        self._home = home
 
     def setAltitude(self,altitude):
         self._alt = altitude
@@ -176,14 +181,12 @@ class ScanArea(object):
                             key=lambda x:x.length)[-1]
                 else:
                     new_edge = Edge(*new_points)
-                if len(dir_coords) == 0:
-                    dir_coords = new_points
+
+                dists_from_coords = new_edge.distanceTo(dir_coords[-1])
+                if dists_from_coords[0] > dists_from_coords[1]:
+                    dir_coords += new_edge.endpoints[::-1]
                 else:
-                    dists_from_coords = new_edge.distanceTo(dir_coords[-1])
-                    if dists_from_coords[0] > dists_from_coords[1]:
-                        dir_coords += new_edge.endpoints[::-1]
-                    else:
-                        dir_coords += new_edge.endpoints
+                    dir_coords += new_edge.endpoints
             else:
                 found_intersect = False
         return dir_coords[1:]
@@ -217,6 +220,15 @@ class ScanArea(object):
                 parallel_dir2,self._coords[-1],first_point)
 
         self._coords.append(self._home)
+
+        #flip things around so that we start by travelling the shorter
+        #route from home at the beginning
+        end_edges = Edge(self._coords[1],self._coords[-2])
+        end_dists = end_edges.distanceTo(self._home)
+        if end_dists[0] > end_dists[1]:
+            print(len(self._coords),end=' ')
+            self._coords = [self._home]+self._coords[1:-1:][::-1]+[self._home]
+            print(len(self._coords))
         return self._coords
 
     def _plotPoints(self,points,**kwargs):
@@ -229,13 +241,14 @@ class ScanArea(object):
             ys = points['lat']
         plt.plot(xs,ys,**kwargs)
 
-    def plot(self,show=True):
+    def plot(self,show=True,include=['perimeter','coords']):
         from matplotlib import pyplot as plt
-        self._plotPoints(self._perimeter+[self._perimeter[0]],lw=2)
-        if self._coords:
+        if 'perimeter' in include:
+            self._plotPoints(self._perimeter+[self._perimeter[0]],color='blue',lw=2)
+        if self._coords and 'coords' in include:
             self._plotPoints(self._coords,color='r',lw=2)
-
-        self._plotPoints(self._perimeter[0],color='g',marker='o')
+        if 'perimeter' in include:
+            self._plotPoints(self._perimeter[0],color='g',marker='o')
         if show:
             plt.show()
 
@@ -266,7 +279,7 @@ class ScanArea(object):
     def irregularRectangle(cls,home,center,radius,angle=None,
             irregularity=.5,**kwargs):
         angle = angle or np.random.randint(360)
-        armtilt = np.random.randint(15,45)
+        armtilt = np.random.randint(15,35)
         armtilts = [armtilt,180+armtilt,180-armtilt,-armtilt]
         perim=[llmath.atDistAndBearing(center,radius+irregularity*radius*
             np.random.rand(),angle+angl) for angl in armtilts]
@@ -274,27 +287,130 @@ class ScanArea(object):
 
 
     @classmethod
-    def regularStarNGon(cls,home,sides,center,radius,**kwargs):
+    def regularStar(cls,home,points,center,radius,**kwargs):
+        sides = 2*points
         perim = []
         for i,angl in enumerate(np.linspace(0,360,sides+1)[:-1]):
             dist = radius*(.5+.5*(i%2))
             perim.append(llmath.atDistAndBearing(center,dist,angl))
         return cls(home,perim)
 
+class ScanRegion(object):
+    """Class to represent the entire region being scanned, consisting of 
+    one or more non-overlapping continuous regions"""
+    def __init__(self,home,spectrometer=None,alt = None,bearing=None):
+        self._home = home
+        self._scanareas = []
+        self._spectrometer = spectrometer
+        self._alt = alt 
+        self._bearing = bearing
+
+    def addScanArea(self,scanarea):
+        scanarea.setAltitude(self._alt)
+        scanarea.setSpectrometer(self._spectrometer)
+        scanarea.setBearing(self._bearing)
+        self._scanareas.append(scanarea)
+
+    def setAltitude(self,altitude):
+        self._alt = altitude
+        for sa in self.scanAreas:
+            sa.setAltitude(self._alt)
+
+    def setSpectrometer(self,spectrometer):
+        self._spectrometer = spectrometer
+        for sa in self.scanAreas:
+            sa.setSpectrometer(self._spectrometer)
+
+    def setBearing(self,bearing):
+        if bearing == 90:
+            #trig stuff in LatLonMath doesn't like 90
+            bearing = 89.99
+        self._bearing = bearing
+        for sa in self.scanAreas:
+            sa.setBearing(self._bearing)
+
+
+    @property
+    def scanAreas(self):
+        return self._scanareas
+
+    @scanAreas.setter
+    def scanAreas(self,scanareas):
+        self._scanareas = scanareas
+        #make scan area metadata uniform
+        self.setAltitude(self._altitude)
+        self.setBearing(self._bearing)
+        self.setSpectrometer(self._spectrometer)
+
+    def findScanLines(self):
+        """Find the scan lines of each ScanArea, then chain them together"""
+        self._coords = [self._home]
+        home = self._home
+        for sa in self.scanAreas:
+            sa.setHome(home)
+            new_coords = sa.findScanLines()[1:-1]
+            self._coords+= new_coords
+            home = self._coords[-1]
+        self._coords.append(self._home)
+
+    def plot(self,show=True):
+        for sa in self.scanAreas[:-1]:
+            sa.plot(show=False,include='perimeter')
+        self.scanAreas[-1]._plotPoints(self._coords,color='r',lw=2)
+        self.scanAreas[-1].plot(show=True,include='perimeter')
+
+    
+    @classmethod
+    def fromKMLPolys(Cls,kml_fname,home=None,**kwargs):
+        coords = KMLParse.findPolyCoords(kml_fname)
+        home = home or coords[0][0]
+        region = Cls(home,**kwargs)
+        for perimeter in coords:
+            region.addScanArea(ScanArea(home,perimeter))
+        return region
+
+    @classmethod
+    def fromSHPPolys(Cls,shp_fname,home=None,**kwargs):
+        coords = SHPParse.findPolyCoords(shp_fname)
+        home = home or coords[0][0]
+        region = Cls(home,**kwargs)
+        for perimeter in coords:
+            region.addScanArea(ScanArea(home,perimeter))
+        return region
 
 if __name__ == '__main__':
+    '''
     home = {'lat':43.305587,'lon':-89.333022}
     center = {'lat':43.305303,'lon':-89.332033}
-    radius = 40
-    #NW = {'lat':43.305487,'lon':-89.332522}
-    #SE = {'lat':43.305303,'lon':-89.332033}
-    #area = ScanArea.rectangle(home,NW,SE)
-    for i in [45]:
-        #area = ScanArea.irregularRectangle(home,center,radius)
-        area = ScanArea.regularNGon(home,10,center,radius)
-        area.setBearing(i)
-        area.setAltitude(20)
-        area.setSpectrometer(Spectrometer.HeadwallNanoHyperspec())
-        area.findScanLines()
-        area.plot()
+    radius = 60
+    region = ScanRegion(home)
+    region.setBearing(45)
+    region.setAltitude(40)
+    region.setSpectrometer(Spectrometer.HeadwallNanoHyperspec())
+    area = ScanArea.irregularRectangle(home,center,radius)
+    region.addScanArea(area)
+    for i in range(5):
+        new_center = {'lat':center['lat'],'lon':center['lon']+.0022*i}
+        if i%2:
+            area = ScanArea.irregularRectangle(home,new_center,radius)
+        else:
+            area = ScanArea.irregularRectangle(home,new_center,radius/2)
+        region.addScanArea(area)
 
+    center = new_center
+
+    for i in range(5):
+        new_center = {'lat':center['lat']+.0013,'lon':center['lon']-.0022*i}
+        if not i%2:
+            area = ScanArea.irregularRectangle(home,new_center,radius)
+        else:
+            area = ScanArea.irregularRectangle(home,new_center,radius/2)
+        region.addScanArea(area)
+    '''
+    import sys
+    region = ScanRegion.fromSHPPolys(sys.argv[1])
+    region.setBearing(45)
+    region.setAltitude(40)
+    region.setSpectrometer(Spectrometer.HeadwallNanoHyperspec())
+    region.findScanLines()
+    region.plot()
