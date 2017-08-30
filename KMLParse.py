@@ -34,9 +34,21 @@ def findPolyCoords(kmlfile,ptype="LinearRing"):
     with open(kmlfile) as f:
         return[latlonfromcoords(c) for c in digIntoTree(etree.parse(f),TREE)]
 
+def findRegionType(kmlfile,types_to_check=("Polygon","Point")):
+    """Test the various coord finding methods on this file and see if they
+    produce valid results"""
+    with open(kmlfile) as f:
+        dataset = etree.parse(f)
+        for elem in dataset.iter():
+            for t in types_to_check:
+                if elem.tag.endswith(t):
+                    return t
+    return None
+
+
 
 if __name__ == '__main__':
     import sys
-    print(findPolyCoords(sys.argv[1]))
+    print(findRegionType(sys.argv[1]))
     #print(findPointCoords(sys.argv[1]))
 

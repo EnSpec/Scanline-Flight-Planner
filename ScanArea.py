@@ -4,6 +4,8 @@ import time
 import Spectrometer
 import KMLParse
 import SHPParse
+import WaypointParse
+import os
 
 
 class Edge(object):
@@ -101,6 +103,8 @@ class ScanArea(object):
         self._coords = []
         self._alt = alt
         self._spectrometer = spectrometer
+        self._boundBox = None
+        self._waypoints = []
     
     def setHome(self,home):
         self._home = home
@@ -117,6 +121,20 @@ class ScanArea(object):
             bearing = 89.99
         self._bearing = bearing
         self._arrangePerimeter(self._perimeter)
+
+    def addWayPoint(self,waypoint):
+        self._waypoints.append(waypoint)
+
+    @property
+    def boundBox(self):
+        """return the Northeast and Southwest corners of the area"""
+        if self._boundBox: 
+            return self._boundBox
+        else:
+            NS = sorted(self._perimeter,key=lambda p:p['lat'])
+            WE = sorted(self._perimeter,key=lambda p:p['lat']) 
+            self._boundBox=[{'lat':NS[0],'lon':WE[0]},{'lat':NS[1],'lon':WE[1]}]
+            return self._boundBox
 
     def _computeCenter(self,perimeter):
         """Find the center of the set of points. This is the cartesian center
@@ -219,15 +237,13 @@ class ScanArea(object):
         self._coords += self._findIntersectionsInDirection(
                 parallel_dir2,self._coords[-1],first_point)
 
-        self._coords.append(self._home)
-
         #flip things around so that we start by travelling the shorter
         #route from home at the beginning
         end_edges = Edge(self._coords[1],self._coords[-2])
         end_dists = end_edges.distanceTo(self._home)
         if end_dists[0] > end_dists[1]:
             print(len(self._coords),end=' ')
-            self._coords = [self._home]+self._coords[1:-1:][::-1]+[self._home]
+            self._coords = [self._home]+self._coords[1:][::-1]
             print(len(self._coords))
         return self._coords
 
@@ -252,8 +268,6 @@ class ScanArea(object):
         if show:
             plt.show()
 
-    def toWayPoints(self):
-        raise NotImplementedError
 
     @classmethod
     def fromFile(cls,fname,fformat=None):
@@ -301,9 +315,14 @@ class ScanRegion(object):
     def __init__(self,home,spectrometer=None,alt = None,bearing=None):
         self._home = home
         self._scanareas = []
+        self._waypoints = []
         self._spectrometer = spectrometer
         self._alt = alt 
         self._bearing = bearing
+        self._coords = None
+
+    def addWayPoint(self,waypoint):
+        self._waypoints.append(waypoint)
 
     def addScanArea(self,scanarea):
         scanarea.setAltitude(self._alt)
@@ -329,6 +348,9 @@ class ScanRegion(object):
         for sa in self.scanAreas:
             sa.setBearing(self._bearing)
 
+    @property
+    def wayPoints(self):
+        return self._waypoints
 
     @property
     def scanAreas(self):
@@ -342,16 +364,22 @@ class ScanRegion(object):
         self.setBearing(self._bearing)
         self.setSpectrometer(self._spectrometer)
 
+    def _reorderScanAreas(self,update_home = False):
+        """Order scan areas from northwest to southeast"""
+        pass
+
     def findScanLines(self):
         """Find the scan lines of each ScanArea, then chain them together"""
         self._coords = [self._home]
         home = self._home
+        self._reorderScanAreas()
         for sa in self.scanAreas:
             sa.setHome(home)
             new_coords = sa.findScanLines()[1:-1]
             self._coords+= new_coords
             home = self._coords[-1]
-        self._coords.append(self._home)
+
+        return self._coords
 
     def plot(self,show=True):
         for sa in self.scanAreas[:-1]:
@@ -359,6 +387,12 @@ class ScanRegion(object):
         self.scanAreas[-1]._plotPoints(self._coords,color='r',lw=2)
         self.scanAreas[-1].plot(show=True,include='perimeter')
 
+    def toWayPoints(self,fname):
+        if self._coords is None:
+            self.findScanLines()
+        speed = self._spectrometer.squareScanSpeedAt(self._alt)
+        WaypointParse.waypointsFromCoords(fname,
+                self._coords,self._alt,self._bearing,speed)
     
     @classmethod
     def fromKMLPolys(Cls,kml_fname,home=None,**kwargs):
@@ -377,40 +411,53 @@ class ScanRegion(object):
         for perimeter in coords:
             region.addScanArea(ScanArea(home,perimeter))
         return region
+    
+    @classmethod
+    def fromSHPPoints(Cls,shp_fname,home=None,**kwargs):
+        raise NotImplementedError
+ 
+    @classmethod
+    def fromKMLPoints(Cls,kml_fname,home=None,**kwargs):
+        raise NotImplementedError
+
+    @classmethod
+    def fromFile(Cls,fname,home=None,**kwargs):
+        #which function to use to instantiate from file
+        FILE_FUNC_TREE={
+                ".kml":{
+                    "type":KMLParse.findRegionType,
+                    "Polygon":Cls.fromKMLPolys,
+                    "Point":Cls.fromKMLPoints
+                },
+                (".shp",".shx",".dbf"):{
+                    "type":SHPParse.findRegionType,
+                    "Polygon":Cls.fromSHPPolys,
+                    "Point":Cls.fromSHPPoints
+                },
+        }
+        ext = os.path.splitext(fname)[1].lower()
+        for key in FILE_FUNC_TREE:
+            if ext in key:
+                dtype=FILE_FUNC_TREE[key]['type'](fname)
+                return FILE_FUNC_TREE[key][dtype](fname,home,**kwargs)
+        raise IOError("Unable to parse file {} into ScanRegion".format(fname))
+            
 
 if __name__ == '__main__':
-    '''
-    home = {'lat':43.305587,'lon':-89.333022}
-    center = {'lat':43.305303,'lon':-89.332033}
-    radius = 60
-    region = ScanRegion(home)
-    region.setBearing(45)
-    region.setAltitude(40)
-    region.setSpectrometer(Spectrometer.HeadwallNanoHyperspec())
-    area = ScanArea.irregularRectangle(home,center,radius)
-    region.addScanArea(area)
-    for i in range(5):
-        new_center = {'lat':center['lat'],'lon':center['lon']+.0022*i}
-        if i%2:
-            area = ScanArea.irregularRectangle(home,new_center,radius)
-        else:
-            area = ScanArea.irregularRectangle(home,new_center,radius/2)
-        region.addScanArea(area)
-
-    center = new_center
-
-    for i in range(5):
-        new_center = {'lat':center['lat']+.0013,'lon':center['lon']-.0022*i}
-        if not i%2:
-            area = ScanArea.irregularRectangle(home,new_center,radius)
-        else:
-            area = ScanArea.irregularRectangle(home,new_center,radius/2)
-        region.addScanArea(area)
-    '''
     import sys
-    region = ScanRegion.fromSHPPolys(sys.argv[1])
-    region.setBearing(45)
-    region.setAltitude(40)
-    region.setSpectrometer(Spectrometer.HeadwallNanoHyperspec())
+    region = ScanRegion.fromFile(sys.argv[1])
+    if len(sys.argv) > 3:
+        region.setAltitude(int(sys.argv[3]))
+    else:
+        region.setAltitude(60)
+    if len(sys.argv) > 4:
+        region.setBearing(int(sys.argv[4]))
+    else:
+        region.setBearing(45)
+    scanner = Spectrometer.HeadwallNanoHyperspec()
+    scanner.setFramePeriod(0.005)
+    region.setSpectrometer(scanner)
+
     region.findScanLines()
+    region.toWayPoints(sys.argv[2])
     region.plot()
