@@ -1,0 +1,73 @@
+
+[2017-08-31 13:24:03] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 27, in loadFile
+    fname = filedialog.askopenfilename()
+  File "/home/mwestphall/anaconda3/lib/python3.5/tkinter/filedialog.py", line 375, in askopenfilename
+    return Open(**options).show()
+  File "/home/mwestphall/anaconda3/lib/python3.5/tkinter/commondialog.py", line 48, in show
+    s = w.tk.call(self.command, *w._options(self.options))
+_tkinter.TclError: can't invoke "grab" command:  application has been destroyed
+
+
+[2017-08-31 13:49:52] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 55, in createPath
+    region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 378, in findScanLines
+    new_coords = sa.findScanLines()[1:-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 214, in findScanLines
+    self._width = self._spectrometer.swathWidthAt(self._alt)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/Spectrometer.py", line 28, in swathWidthAt
+    return 2*alt*np.tan(np.radians(self.fieldOfView/2))
+TypeError: unsupported operand type(s) for *: 'int' and 'NoneType'
+
+
+[2017-08-31 13:53:29] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 40, in setBearing
+    self._bearing = float(bearing)
+NameError: name 'bearing' is not defined
+
+
+[2017-08-31 14:21:39] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 49, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 442, in fromFile
+    return FILE_FUNC_TREE[key][dtype](fname,home,**kwargs)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 421, in fromKMLPoints
+    raise NotImplementedError
+NotImplementedError
+
+
+[2017-08-31 14:23:43] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 44, in loadFile
+    fname = os.path.split(self._fname)[1]
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 103, in split
+    i = p.rfind(sep) + 1
+AttributeError: 'tuple' object has no attribute 'rfind'
+
+
+[2017-08-31 14:49:47] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 58, in createPath
+    bounds= region.boundBox
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 361, in boundBox
+    NS = sorted(self._perimeter,key=lambda p:p['lat'])
+AttributeError: 'ScanRegion' object has no attribute '_perimeter'
+
+
+[2017-08-31 15:33:03] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 55, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 454, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+

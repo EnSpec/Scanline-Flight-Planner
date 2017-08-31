@@ -349,13 +349,29 @@ class ScanRegion(object):
             sa.setBearing(self._bearing)
 
     @property
-    def wayPoints(self):
-        return self._waypoints
+    def allPerimeterPoints(self):
+        points = []
+        for area in self.scanAreas:
+            points += area._perimeter
+        return points
+
+    @property
+    def boundBox(self):
+        points = self.allPerimeterPoints
+        NS = sorted(points,key=lambda p:p['lat'])
+        WE = sorted(points,key=lambda p:p['lon']) 
+        SW = {'lat':NS[0]['lat'],'lon':WE[0]['lon']}
+        NE = {'lat':NS[-1]['lat'],'lon':WE[-1]['lon']}
+        return [SW,NE]
+
+    @property
+    def center(self):
+        return self._scanareas[0]._center
 
     @property
     def scanAreas(self):
         return self._scanareas
-
+    
     @scanAreas.setter
     def scanAreas(self,scanareas):
         self._scanareas = scanareas
