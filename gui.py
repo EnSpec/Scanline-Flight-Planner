@@ -20,7 +20,7 @@ class External(object):
         self._bearing = 45
         self._alt = 45
         self._scan_pd = .002
-        self._home = 0
+        self._home = None
         self._region = None
     
     def echo(self,js_callback):
@@ -46,14 +46,21 @@ class External(object):
 
     def loadFile(self,js_callback):
         fname = filedialog.askopenfilename()
-        if isinstance(fname,str):
+        if isinstance(fname,str) and os.path.exists(fname):
             self._fname = fname
             fname = os.path.split(self._fname)[1]
             js_callback.Call(fname,self.noop)
 
+    def polygonizePoints(self,points,js_callback):
+        area = ScanArea.ScanArea(points[0],points)
+        print(area._perimeter)
+        js_callback.Call(area._perimeter,self.noop)
 
-    def createPath(self,js_callback):
-        region = ScanArea.ScanRegion.fromFile(self._fname)
+    def createPath(self,coords,js_callback):
+        if coords:
+            region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home)
+        else:
+            region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
         region.setAltitude(self._alt)
         region.setBearing(self._bearing)
         scanner = Spectrometer.HeadwallNanoHyperspec()
@@ -82,7 +89,7 @@ def main():
     cef.Initialize()
     #set up a browser
     window_info = cef.WindowInfo()
-    window_info.SetAsChild(0, [0,0,1000,650])
+    window_info.SetAsChild(0, [0,0,1280,720])
     browser = cef.CreateBrowserSync(
             window_title="NanoSpec Scan Route Preview", 
             url=url, window_info=window_info)

@@ -128,13 +128,11 @@ class ScanArea(object):
     @property
     def boundBox(self):
         """return the Northeast and Southwest corners of the area"""
-        if self._boundBox: 
-            return self._boundBox
-        else:
-            NS = sorted(self._perimeter,key=lambda p:p['lat'])
-            WE = sorted(self._perimeter,key=lambda p:p['lat']) 
-            self._boundBox=[{'lat':NS[0],'lon':WE[0]},{'lat':NS[1],'lon':WE[1]}]
-            return self._boundBox
+        NS = sorted(self._perimeter,key=lambda p:p['lat'])
+        WE = sorted(self._perimeter,key=lambda p:p['lon']) 
+        SW = {'lat':NS[0]['lat'],'lon':WE[0]['lon']}
+        NE = {'lat':NS[-1]['lat'],'lon':WE[-1]['lon']}
+        return [SW,NE]
 
     def _computeCenter(self,perimeter):
         """Find the center of the set of points. This is the cartesian center
@@ -380,9 +378,11 @@ class ScanRegion(object):
         self.setBearing(self._bearing)
         self.setSpectrometer(self._spectrometer)
 
-    def _reorderScanAreas(self,update_home = False):
-        """Order scan areas from northwest to southeast"""
-        pass
+    def _reorderScanAreas(self):
+        """Order scan areas from closest to home to farthest from home"""
+        def _prox_to_home(a):
+            return min(Edge(*a.boundBox).distanceTo(self._home))
+        self._scanareas.sort(key=_prox_to_home) 
 
     def findScanLines(self):
         """Find the scan lines of each ScanArea, then chain them together"""
@@ -409,7 +409,14 @@ class ScanRegion(object):
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
         WaypointParse.waypointsFromCoords(fname,
                 self._coords,self._alt,self._bearing,speed)
-    
+    @classmethod
+    def from2DLatLonArray(Cls,coords,home=None,**kwargs):
+        home = home or coords[0][0]
+        region = Cls(home,**kwargs)
+        for perimeter in coords:
+            region.addScanArea(ScanArea(home,perimeter))
+        return region
+
     @classmethod
     def fromKMLPolys(Cls,kml_fname,home=None,**kwargs):
         coords = KMLParse.findPolyCoords(kml_fname)

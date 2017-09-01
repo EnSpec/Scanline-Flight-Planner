@@ -17,8 +17,7 @@ var toPyCoords = function(latLng){
 }
 
 icon_url='http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png';
-//plus_url='http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png';
-plus_url='https://cdn.pixabay.com/photo/2014/04/02/10/55/plus-304947_960_720.png'
+plus_url='http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png';
 var userDrawnRegion = {
     drawnAreas: [],
     vertexMarkers: [],
@@ -123,8 +122,6 @@ var userDrawnRegion = {
 
     },
     enterDrawMode:function(){
-        if(scanPath) scanPath.setMap(null);
-        if(homeMarker) homeMarker.setMap(null);
         _.each(this.drawnAreas,function(area){
             area.setOptions({
                 fillOpacity: 0.35,
@@ -135,7 +132,7 @@ var userDrawnRegion = {
 
     },
     exitDrawMode:function(){
-        //this.closeVertices();
+        this.closeVertices();
         _.each(this.drawnAreas,function(area){
             area.setOptions({
                 fillOpacity: 0.05,
@@ -236,9 +233,7 @@ $(document).ready(function(){
             setScanPath(coords);
             if(resetHome){
                 setHomeMarker(coords[0]);
-                if(!loadFromDrawing){
-                    setBoundBox(bounds);
-                }
+                setBoundBox(bounds);
             }
             resetHome=true;
         
