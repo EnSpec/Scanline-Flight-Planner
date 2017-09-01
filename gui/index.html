@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="encoding" value="utf-8">
+    <script type="text/javascript" src="js/jquery-3.2.0.min.js"></script>
+    <script type="text/javascript" src="js/jquery-ui.min.js">
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/underscore-min.js"></script>
+
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="css/style.css" rel="stylesheet" type="text/css">
+    <link href="css/jquery-ui.min.css" rel="stylesheet" type="text/css">
+    <title>NanoSpec Scan Route Plotter</title>
+</head>
+<body>
+    <div class="container">
+        <div class="row" >
+            <div class="col-12">
+                <h3>Scan Route Preview</h3>
+                <div id="map"></div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-4">
+            <p><button id="infile">Choose File</button><br>
+            or <button id="start_draw">Draw Area</button> <a href='#'>(Help)</a>
+            </p>
+            <div id="draw_panel" style="display:none">
+                <button id="clear_draw">Clear</button>
+                <button id="finish_draw">Finish</button>
+            </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                <p>Scan Altitude: <input type="text" id="alt"value=45> m</p>
+                </div>
+                <div class="row">
+                <p>Scan Bearing: <input type="text" id="bearing"value=45>&deg;</p>
+                </div>
+            </div>
+            <div class="col-4">
+                <div class="row">
+                <p>Frame Period: <input type="text" style="width:2em" id="frame_pd"value=2>ms</p>
+                </div>
+                <div class="row text-right">
+                    <button id="generate">Generate Path</button>
+                    <button id="save">Save Path</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript" src="js/map.js"></script>
+    <script async defer
+    src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+    </script>
+  </body>
+</html>
