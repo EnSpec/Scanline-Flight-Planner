@@ -1,7 +1,9 @@
 
 var map;
+var searchBox;
 var inDrawMode = false;
 var loadFromDrawing = true;
+var noFileLoadedText;
 var cleanPyCoords = function(c){
     //CEF sometimes converts coords to strings, make sure they're numbers
     return {lat:Number(c.lat),lng:Number(c.lon)};
@@ -16,16 +18,22 @@ var toPyCoords = function(latLng){
     }
 }
 
-icon_url='http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png';
-//plus_url='http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png';
-plus_url='https://cdn.pixabay.com/photo/2014/04/02/10/55/plus-304947_960_720.png'
+vertex_url='http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png';
+plus_url='http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png';
+minus_url='http://maps.google.com/mapfiles/kml/paddle/red-square-lv.png';
+//plus_url='https://cdn.pixabay.com/photo/2014/04/02/10/55/plus-304947_960_720.png'
 var userDrawnRegion = {
     drawnAreas: [],
     vertexMarkers: [],
     init:function(){
         //call this once map is initialized
         var self=this;
-        this.vertexImage = new google.maps.MarkerImage(icon_url,
+        this.vertexImage = new google.maps.MarkerImage(vertex_url,
+            new google.maps.Size(30,30),
+            new google.maps.Point(0,0),
+            new google.maps.Point(15,15)
+        );
+        this.minusImage = new google.maps.MarkerImage(minus_url,
             new google.maps.Size(30,30),
             new google.maps.Point(0,0),
             new google.maps.Point(15,15)
@@ -57,6 +65,7 @@ var userDrawnRegion = {
         this.centerPlus.setPosition(center);
 
     },
+
     addVertex: function(latLng){
         var self=this;
         var newMarker = new google.maps.Marker({
@@ -90,6 +99,14 @@ var userDrawnRegion = {
                 editable:true
             });
             newPoly.setMap(map);
+            newPoly.isRightClicked=false;
+            newPoly.addListener('rightclick',function(){
+                if(!inDrawMode) return;
+                //right click the area to delete it
+                newPoly.setMap(null);
+                self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
+            });
+
             _.each(self.vertexMarkers,(m)=>m.setMap(null));
             self.vertexMarkers=[];
             self.centerPlus.setMap(null);
@@ -145,7 +162,9 @@ var userDrawnRegion = {
         });
 
     },
-    
+    hasDrawnRegions: function(){
+        return this.drawnAreas.length > 0;
+    },    
 
 
 };
@@ -165,7 +184,7 @@ var setHomeMarker = function(latlng){
     homeMarker.addListener('dragend',function(event){
         external.setHome(event.latLng.lat(),event.latLng.lng());   
         resetHome = false;
-        $('#generate').click()
+        generatePath()
     });
 
 };
@@ -178,10 +197,10 @@ var setScanPath = function(latlngs){
         geodesic:true,
         strokeColor: '#FF0000',
         strokeOpacity:1.0,
-        strokeWeight: 2
+        strokeWeight: 2,
+        zIndex:999
     });
     scanPath.setMap(map);
-
 };
 
 var setBoundBox = function(bounds){
@@ -197,9 +216,41 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
       zoom: 3,
       center: zerozero,
-      disableDoubleClickZoom: true,
       mapTypeId: 'satellite'
     });
+    //code taken from 
+    searchBox = new google.maps.places.SearchBox(
+            document.getElementById('pac-input'));
+        // Bias the SearchBox results towards current map's viewport.
+    map.addListener('bounds_changed', function() {
+        searchBox.setBounds(map.getBounds());
+    });
+    searchBox.addListener('places_changed', function() {
+      var places = searchBox.getPlaces();
+
+      if (places.length == 0) {
+        return;
+      }
+
+
+      // For each place, get the icon, name and location.
+      var bounds = new google.maps.LatLngBounds();
+      places.forEach(function(place) {
+        if (!place.geometry) {
+          console.log("Returned place contains no geometry");
+          return;
+        }
+
+        if (place.geometry.viewport) {
+          // Only geocodes have viewport.
+          bounds.union(place.geometry.viewport);
+        } else {
+          bounds.extend(place.geometry.location);
+        }
+      });
+      map.fitBounds(bounds);
+    });
+        
     
     //if we're in draw mode, double clicking should add a vertex rather than
     //zooming in the map
@@ -214,64 +265,94 @@ function initMap() {
 
     userDrawnRegion.init();
 };
+
+var setScanSpeed=function(speed){
+    $('#scan_speed').html(speed);
+    var seconds = Math.floor(1000*Number($('#scan_len').html())/Number(speed));
+    var date = new Date(null);
+    date.setSeconds(seconds);
+    $('#scan_time').html(date.toISOString().substr(11,8));
+};
+
+var generatePath = function(){
+    if(!($('#alt').val()&&$('#bearing').val())) return;
+    if(!loadFromDrawing && $('#infile').html() == noFileLoadedText) return;
+    var coords = (loadFromDrawing)?userDrawnRegion.getCoords():false;
+    console.log(coords);
+    external.createPath(coords,function(coords,bounds,dist,speed){
+        coords = _.map(coords,(c)=>cleanPyCoords(c));
+        bounds = _.map(bounds,(c)=>cleanPyCoords(c));
+        $('#scan_len').html(dist);
+        setScanSpeed(speed);
+
+        setScanPath(coords);
+        if(resetHome){
+            setHomeMarker(coords[0]);
+            if(!loadFromDrawing){
+                setBoundBox(bounds);
+            }
+        }
+        resetHome=true;
+    
+    });
+}
 $(document).ready(function(){
+    noFileLoadedText = $('#infile').html();
     $('#infile').click(function(){
         external.loadFile(function(file){
             loadFromDrawing=false;
-            $('#infile').html(file);
-            $('#generate').click();
+            $('#infile').html("File: "+file);
+            generatePath();
         });
     });
 
     //bind functions to buttons
-    $('#generate').click(function(){
-        if(!($('#alt').val()&&$('#bearing').val()))return;
-        if(!loadFromDrawing && $('#infile').html() == 'Choose File') return;
-        var coords = (loadFromDrawing)?userDrawnRegion.getCoords():false;
-        console.log(coords);
-        external.createPath(coords,function(coords,bounds){
-            coords = _.map(coords,(c)=>cleanPyCoords(c));
-            bounds = _.map(bounds,(c)=>cleanPyCoords(c));
-
-            setScanPath(coords);
-            if(resetHome){
-                setHomeMarker(coords[0]);
-                if(!loadFromDrawing){
-                    setBoundBox(bounds);
-                }
-            }
-            resetHome=true;
-        
-        });
-    });
     $('#clear_draw').click(function(){
         userDrawnRegion.clearDrawing();
+        resetHome=true;
     });    
     $('#start_draw').click(function(){
         inDrawMode = true;
         loadFromDrawing = true;
+        $('input,select,#generate,#save,#infile').prop('disabled',true);
+        $('#io_panel').hide();
         $('#draw_panel').show();
         userDrawnRegion.enterDrawMode();
+        map.setOptions({
+             disableDoubleClickZoom: true
+        });
     });
     $('#finish_draw').click(function(){
         inDrawMode = false;
         $('#draw_panel').hide();
+        $('#io_panel').show();
+        $('input,select,#generate,#save,#infile').prop('disabled',false);
         userDrawnRegion.exitDrawMode();
-        $('#generate').click();
+        if(userDrawnRegion.hasDrawnRegions())
+            generatePath();
+        map.setOptions({
+             disableDoubleClickZoom: false
+        });
     });
 
+    $('#spectrometer').change(function(){
+        external.setSpectrometer($(this).val());
+        generatePath();
+    });
     $('#alt').change(function(){
         external.setAlt($(this).val());
-        $('#generate').click();
+        generatePath();
     });
     $('#bearing').change(function(){
         external.setBearing($(this).val());
-        $('#generate').click();
+        generatePath();
+    });
+    $('#frame_pd').change(function(){
+        external.setScanPeriod(Number($(this).val())/1000);
+        external.getScanSpeed(function(speed){setScanSpeed(speed)});
+
     });
     $('#save').click(function(){
         external.savePath();
     });
-
-
-
 });

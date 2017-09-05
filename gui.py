@@ -22,6 +22,7 @@ class External(object):
         self._scan_pd = .002
         self._home = None
         self._region = None
+        self._spectrometer = None
     
     def echo(self,js_callback):
         try:
@@ -44,6 +45,19 @@ class External(object):
     def setBearing(self,val):
         self._bearing = float(val)
 
+    def setScanPeriod(self,val):
+        self._scan_pd = float(val)
+    
+    def setSpectrometer(self,val):
+        self._spectrometer = Spectrometer.spectrometerByName(val)()
+    def getScanSpeed(self,js_callback):
+        if self._region:
+            self._region._spectrometer.setFramePeriod(self._scan_pd)
+            speed = "%.2f"%self._region.scanVelocity
+        else:
+            speed = "0"
+        js_callback.Call(speed,self.noop)
+
     def loadFile(self,js_callback):
         fname = filedialog.askopenfilename()
         if isinstance(fname,str) and os.path.exists(fname):
@@ -63,13 +77,15 @@ class External(object):
             region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
         region.setAltitude(self._alt)
         region.setBearing(self._bearing)
-        scanner = Spectrometer.HeadwallNanoHyperspec()
-        scanner.setFramePeriod(0.005)
+        scanner = self._spectrometer or Spectrometer.HeadwallNanoHyperspec()
+        scanner.setFramePeriod(self._scan_pd)
         region.setSpectrometer(scanner)
         coords = region.findScanLines()
         bounds= region.boundBox
+        dist = "%.2f"%(region.totalScanLength/1000)
+        speed = "%.2f"%region.scanVelocity
         self._region = region
-        js_callback.Call(coords,bounds)
+        js_callback.Call(coords,bounds,dist,speed)
 
     def savePath(self):
         if self._region is None:

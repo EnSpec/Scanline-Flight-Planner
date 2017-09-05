@@ -39,9 +39,13 @@ class Spectrometer(object):
         
 
 #Predefined Spectrometers
-class AVRISNextGen(Spectrometer):
+class AVIRISClassic(Spectrometer):
     def __init__(self):
-        Spectrometer.__init__(self,36,None,640)
+        Spectrometer.__init__(self,34,0.027,677)
+
+class AVIRISNextGen(Spectrometer):
+    def __init__(self):
+        Spectrometer.__init__(self,36,0.023,640)
 
 class HeadwallNanoHyperspec(Spectrometer):
     def __init__(self):
@@ -49,11 +53,25 @@ class HeadwallNanoHyperspec(Spectrometer):
 
 class HeadwallVNIR_SWIR_co_boresi(Spectrometer):
     def __init__(self):
-        Spectrometer.__init__(self,20.887,None,380)
+        Spectrometer.__init__(self,20.887,0.030,380)
 
 class SpecimFENIX(Spectrometer):
     def __init__(self):
-        Spectrometer.__init__(self,32.3,None,384)
+        Spectrometer.__init__(self,32.3,0.028,384)
+
+class NorskElektroOp(Spectrometer):
+    def __init__(self):
+        Spectrometer.__init__(self,34,0.02,384)
+
+def spectrometerByName(name):
+    return {
+        "AVIRIS Classic":AVIRISClassic,
+        "AVIRIS Next Gen":AVIRISNextGen,
+        "Headwall Nano Hyperspec":HeadwallNanoHyperspec,
+        "Headwall VNIR-SWIR co-boresi":HeadwallVNIR_SWIR_co_boresi,
+        "Specim FENIX":SpecimFENIX,
+        "Norsk Elektro Optikk HySpex":NorskElektroOp
+    }[name]
 
 
 if __name__ == '__main__':

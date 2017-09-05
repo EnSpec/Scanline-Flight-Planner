@@ -224,3 +224,127 @@ AttributeError: 'NoneType' object has no attribute 'rfind'
     sepIndex = p.rfind(sep)
 AttributeError: 'NoneType' object has no attribute 'rfind'
 
+
+[2017-09-05 11:05:22] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 63, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 461, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+
+
+[2017-09-05 11:10:27] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 63, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 461, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+
+
+[2017-09-05 12:06:13] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 63, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 461, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+
+
+[2017-09-05 12:44:52] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 74, in createPath
+    dist = region.totalScanLength
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 406, in totalScanLength
+    sum_dist+=llmath.distanceTo(self.coords[0],self.coords[-1])
+AttributeError: 'ScanRegion' object has no attribute 'coords'
+
+
+[2017-09-05 12:53:43] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 45, in setBearing
+    self._bearing = float(val)
+ValueError: could not convert string to float: 
+
+
+[2017-09-05 13:43:59] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 39, in setAlt
+    self._alt = float(val)
+ValueError: could not convert string to float: 
+
+
+[2017-09-05 13:46:41] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 52, in getScanSpeed
+    self._region._spectrometer.setFramePeriod(self._frame_pd)
+AttributeError: 'External' object has no attribute '_frame_pd'
+
+
+[2017-09-05 15:12:37] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 77, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 479, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+
+
+[2017-09-05 15:12:40] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 77, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 479, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+
+
+[2017-09-05 15:26:45] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 81, in createPath
+    scanner.setFramePeriod(self._scan_pd)
+TypeError: setFramePeriod() missing 1 required positional argument: 'pd'
+
+
+[2017-09-05 15:28:21] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 52, in setSpectrometer
+    self._spectrometer = Spectrometer.spectrometerByName(val)()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/Spectrometer.py", line 74, in spectrometerByName
+    }[name]
+KeyError: 'Norsk Elektro Optikk HySpex'
+
+
+[2017-09-05 15:29:46] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 77, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 479, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+

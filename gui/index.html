@@ -20,38 +20,59 @@
                 <div id="map"></div>
             </div>
         </div>
+        <div class="row"style="margin-bottom:20px">
+            <div class="col-12">
+                <input id="pac-input" style="width:25%"class="controls" type="text" placeholder="Search Locations">
+            </div>
+
+        </div>
         <div class="row">
-            <div class="col-4">
-            <p><button id="infile">Choose File</button><br>
-            or <button id="start_draw">Draw Area</button> <a href='#'>(Help)</a>
+            <div class="col-3">
+            <p><button id="infile">Load Area from File</button><br>
+            <button id="start_draw">Draw Area</button> <a href='#'>(Help)</a>
             </p>
+            <div id="io_panel">
+                <button id="save">Save Path</button>
+            </div>
             <div id="draw_panel" style="display:none">
                 <button id="clear_draw">Clear</button>
                 <button id="finish_draw">Finish</button>
             </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 <div class="row">
-                <p>Scan Altitude: <input type="text" id="alt"value=45> m</p>
+                <p>Scan Altitude: <input type="text" style="width:3em" id="alt"value=45> m</p>
                 </div>
                 <div class="row">
-                <p>Scan Bearing: <input type="text" id="bearing"value=45>&deg;</p>
+                <p>Scan Bearing: <input type="text" style="width:3em" id="bearing"value=45>&deg;</p>
                 </div>
             </div>
-            <div class="col-4">
+            <div class="col-3">
                 <div class="row">
-                <p>Frame Period: <input type="text" style="width:2em" id="frame_pd"value=2>ms</p>
+                    <p><select id="spectrometer">
+                        <option>AVIRIS Classic</option>
+                        <option>AVIRIS Next Gen</option>
+                        <option selected>Headwall Nano Hyperspec</option>
+                        <option>Headwall VNIR-SWIR co-boresi</option>
+                        <option>Specim FENIX</option>
+                        <option>Norsk Elektro Optikk HySpex</option>
+                    </select></p>
+                    <p>Frame Period: <input type="text" style="width:3em" id="frame_pd"value=2> ms</p>
                 </div>
-                <div class="row text-right">
-                    <button id="generate">Generate Path</button>
-                    <button id="save">Save Path</button>
+            </div>
+            <div class="col-3">
+                <div class="row">
+                    <p>Path Length: <span id="scan_len">0</span> km<br>
+                    Flight Velocity: <span id="scan_speed">0</span> m/s<br>
+                    Flight Duration: <span id="scan_time">0:00:00</span><br>
+                    Pixel Size: <span id="px_size">0</span> m</p>
                 </div>
             </div>
         </div>
     </div>
     <script type="text/javascript" src="js/map.js"></script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap">
     </script>
   </body>
 </html>

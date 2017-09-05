@@ -397,6 +397,23 @@ class ScanRegion(object):
 
         return self._coords
 
+    @property
+    def totalScanLength(self):
+        sum_dist=0
+        for i,coord in enumerate(self._coords[1:]):
+            sum_dist+=llmath.distanceTo(coord,self._coords[i])
+
+        sum_dist+=llmath.distanceTo(self._coords[0],self._coords[-1])
+        return sum_dist
+
+    @property
+    def totalScanTime(self):
+        return self.totalScanLength/self.scanVelocity
+
+    @property
+    def scanVelocity(self):
+        return self._spectrometer.squareScanSpeedAt(self._alt)
+
     def plot(self,show=True):
         for sa in self.scanAreas[:-1]:
             sa.plot(show=False,include='perimeter')
@@ -409,6 +426,7 @@ class ScanRegion(object):
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
         WaypointParse.waypointsFromCoords(fname,
                 self._coords,self._alt,self._bearing,speed)
+    
     @classmethod
     def from2DLatLonArray(Cls,coords,home=None,**kwargs):
         home = home or coords[0][0]
