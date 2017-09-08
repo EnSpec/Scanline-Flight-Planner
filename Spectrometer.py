@@ -30,6 +30,8 @@ class Spectrometer(object):
     def crossSwathWidthAt(self,alt):
         return 2*alt*np.tan(np.radians(self.crossFieldOfView/2))
     
+    def altForPixelSize(self,px_size):
+        return self._px*px_size/(2*np.tan(np.radians(self.fieldOfView/2)))
     def pixelSizeAt(self,alt):
         return self.swathWidthAt(alt)/self.scanLinePixels
 
@@ -80,3 +82,6 @@ if __name__ == '__main__':
     print(spec.swathWidthAt(20.12))
     print(spec.crossSwathWidthAt(20.12))
     print(spec.squareScanSpeedAt(20.12))
+    px_w = spec.pixelSizeAt(610)
+    print(px_w)
+    print(spec.altForPixelSize(px_w))

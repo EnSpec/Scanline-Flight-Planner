@@ -348,3 +348,44 @@ KeyError: 'Norsk Elektro Optikk HySpex'
     sepIndex = p.rfind(sep)
 AttributeError: 'NoneType' object has no attribute 'rfind'
 
+
+[2017-09-05 16:18:37] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 94, in savePath
+    self._region.toWayPoints(fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 428, in toWayPoints
+    self._coords,self._alt,self._bearing,speed)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/WaypointParse.py", line 18, in waypointsFromCoords
+    with open(fname,'w') as f:
+TypeError: invalid file: ()
+
+
+[2017-09-05 16:20:23] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 95, in savePath
+    self._region.toWayPoints(fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 428, in toWayPoints
+    self._coords,self._alt,self._bearing,speed)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/WaypointParse.py", line 18, in waypointsFromCoords
+    with open(fname,'w') as f:
+FileNotFoundError: [Errno 2] No such file or directory: ''
+
+
+[2017-09-08 16:07:30] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 86, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 479, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 281, in findScanLines
+    parallel_dir1,self._perimeter[2],first_point)[::first_traverse]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 233, in _findIntersectionsInDirection
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 233, in <lambda>
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 42, in length
+    self._length = llmath.distanceTo(self.start,self.end)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: 'int' object is not subscriptable
+

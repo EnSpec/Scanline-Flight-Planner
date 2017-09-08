@@ -33,8 +33,8 @@ class External(object):
             self.raise_serial_err(e)
 
 
-    def setHome(self,lat,lon):
-        self._home = {'lat':lat,'lon':lon}
+    def setHome(self,val):
+        self._home = val
 
     def setAlt(self,val):
         self._alt = float(val)
@@ -75,25 +75,31 @@ class External(object):
             region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home)
         else:
             region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+        region.setVehicle('fullscale')
         region.setAltitude(self._alt)
         region.setBearing(self._bearing)
+        region.setFindScanLineBounds(True)
         scanner = self._spectrometer or Spectrometer.HeadwallNanoHyperspec()
         scanner.setFramePeriod(self._scan_pd)
         region.setSpectrometer(scanner)
+        region.setOvershoot(30)
         coords = region.findScanLines()
         bounds= region.boundBox
+        scanlines=region.scanLineBoundBoxes
         dist = "%.2f"%(region.totalScanLength/1000)
         speed = "%.2f"%region.scanVelocity
         self._region = region
-        js_callback.Call(coords,bounds,dist,speed)
+        js_callback.Call(coords,bounds,dist,speed,scanlines)
 
     def savePath(self):
         if self._region is None:
             return
         fname = filedialog.askopenfilename()
-        self._region.toWayPoints(fname)
-
-
+        if isinstance(fname,str):
+            try:
+                self._region.toWayPoints(fname)
+            except FileNotFoundError:
+                pass
 
 def main():
     script_dir = os.path.dirname(os.path.realpath(__file__))

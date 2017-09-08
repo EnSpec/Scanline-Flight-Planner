@@ -95,7 +95,8 @@ class ScanArea(object):
     """Represents a single, continuous area of land to be scanned.
     Stored internally as a list of coordinates
     """
-    def __init__(self,home,perimeter,spectrometer=None,alt = None,bearing=None):
+    def __init__(self,home,perimeter,spectrometer=None,alt = None,bearing=None,
+            vehicle='quadcopter',overshoot=0,find_scanline_bounds=False):
         self._home = home
         self._perimeter = perimeter
         self.setBearing(bearing)
@@ -105,9 +106,21 @@ class ScanArea(object):
         self._spectrometer = spectrometer
         self._boundBox = None
         self._waypoints = []
+        self._sidelap = 0
+        self._overshoot = 0
+        self._find_bounds = find_scanline_bounds
+        self._scanline_bounds = []
     
     def setHome(self,home):
         self._home = home
+
+    def setOvershoot(self,overshoot):
+        #distance to pass beyond borders of scanarea before turning
+        #useful for fullscale flight vehicles
+        self._overshoot = overshoot
+
+    def setFindScanLineBounds(self,find_bounds):
+        self._find_bounds = find_bounds
 
     def setAltitude(self,altitude):
         self._alt = altitude
@@ -133,6 +146,10 @@ class ScanArea(object):
         SW = {'lat':NS[0]['lat'],'lon':WE[0]['lon']}
         NE = {'lat':NS[-1]['lat'],'lon':WE[-1]['lon']}
         return [SW,NE]
+
+    @property
+    def scanLineBoundBoxes(self):
+        return self._scanline_bounds
 
     def _computeCenter(self,perimeter):
         """Find the center of the set of points. This is the cartesian center
@@ -161,15 +178,33 @@ class ScanArea(object):
             self._edges.append(Edge(start,end))
         self._edges.append(Edge(self._perimeter[-1],self._perimeter[0]))
 
-    
+    def setSidelap(self,sidelap):
+        self._sidelap = sidelap
+
+    def _addScanlineBoundBox(self,scan_edge):
+        bound_box = []
+        normal_dir = (scan_edge.bearing+90)%360
+        antinormal_dir = (normal_dir+180)%360
+        bound_box.append(llmath.atDistAndBearing(scan_edge.start,
+            self._scanline_width/2,normal_dir))
+        bound_box.append(llmath.atDistAndBearing(scan_edge.start,
+            self._scanline_width/2,antinormal_dir))
+        bound_box.append(llmath.atDistAndBearing(scan_edge.end,
+            self._scanline_width/2,antinormal_dir))
+        bound_box.append(llmath.atDistAndBearing(scan_edge.end,
+            self._scanline_width/2,normal_dir))
+
+        self._scanline_bounds.append(bound_box)
+
+
     def _findIntersectionsInDirection(self,direction,start,curr_point=None):
-        """Travel self._width meters in direction, then scan for an intersect
+        """Travel self._travel_width meters in direction, then scan for an intersect
         with an edge both parallel and antiparallel to self._leading_edge.
         If no intersect is found in either direction, we've exited the ScanArea
         and can return
         """
         curr_point = curr_point or llmath.atDistAndBearing(
-                self._perimeter[0],self._width,direction)
+                self._perimeter[0],self._travel_width,direction)
         found_intersect = True
         
         dir_coords = [start]
@@ -179,15 +214,16 @@ class ScanArea(object):
             for t_dir in self._travel_dir,self._opp_dir:
                 for edge in self._edges:
                     intersect = edge.intersection(curr_point,t_dir)
-                    if intersect and len(new_points) < 2:
+                    if intersect:# and len(new_points) < 2:
                         new_points.append(intersect['point'])
                         found_intersect = True
             
             curr_point = llmath.atDistAndBearing(
-                     curr_point,self._width,direction)
+                     curr_point,self._travel_width,direction)
             #append new_points to dir_coords such that the new_point closer 
             #to the last coord is added first
-            if len(new_points) > 1:
+            if len(new_points) > 0:
+                print(len(new_points))
                 #if we cross multiple times (eg in a concave area), just take
                 #the two most extreme
                 if len(new_points) > 2:
@@ -198,18 +234,33 @@ class ScanArea(object):
                 else:
                     new_edge = Edge(*new_points)
 
+                new_points = new_edge.endpoints
+                if self._find_bounds:
+                    self._addScanlineBoundBox(new_edge)
+
+                #if we have an overshoot, stick 2 additional points beyond 
+                #the extrema
+                if self._overshoot > 0:
+                    os1 = llmath.atDistAndBearing(new_points[0],
+                            self._overshoot,(180+new_edge.bearing)%360)
+                    os2 = llmath.atDistAndBearing(new_points[1],
+                            self._overshoot,new_edge.bearing)
+                    new_points = [os1,*new_points,os2]
+
                 dists_from_coords = new_edge.distanceTo(dir_coords[-1])
                 if dists_from_coords[0] > dists_from_coords[1]:
-                    dir_coords += new_edge.endpoints[::-1]
+                    dir_coords += new_points[::-1]
                 else:
-                    dir_coords += new_edge.endpoints
+                    dir_coords += new_points
             else:
                 found_intersect = False
         return dir_coords[1:]
 
     def findScanLines(self):
+        self._scanline_bounds = []
         self._coords = [self._home]
-        self._width = self._spectrometer.swathWidthAt(self._alt)
+        self._scanline_width =self._spectrometer.swathWidthAt(self._alt) 
+        self._travel_width = self._scanline_width*(1-self._sidelap)
         #always travel parallel to our first edge
         self._leading_edge = self._edges[0]
         if self._bearing is None:
@@ -230,7 +281,7 @@ class ScanArea(object):
                 parallel_dir1,self._perimeter[2],first_point)[::first_traverse]
         if first_point is not None:
             first_point = llmath.atDistAndBearing(
-                    self._center,self._width,parallel_dir2)
+                    self._center,self._travel_width,parallel_dir2)
 
         self._coords += self._findIntersectionsInDirection(
                 parallel_dir2,self._coords[-1],first_point)
@@ -255,14 +306,18 @@ class ScanArea(object):
             ys = points['lat']
         plt.plot(xs,ys,**kwargs)
 
-    def plot(self,show=True,include=['perimeter','coords']):
+    def plot(self,show=True,include=['perimeter','coords','bounds']):
         from matplotlib import pyplot as plt
         if 'perimeter' in include:
-            self._plotPoints(self._perimeter+[self._perimeter[0]],color='blue',lw=2)
+            self._plotPoints(self._perimeter+[self._perimeter[0]],
+                    color='blue',lw=2)
+        if 'bounds' in include:
+            for line in self._scanline_bounds:
+                self._plotPoints(line+[line[0]],color='purple',lw=2)
         if self._coords and 'coords' in include:
             self._plotPoints(self._coords,color='r',lw=2)
         if 'perimeter' in include:
-            self._plotPoints(self._perimeter[0],color='g',marker='o')
+            self._plotPoints(self._center,color='g',marker='o')
         if show:
             plt.show()
 
@@ -310,14 +365,22 @@ class ScanArea(object):
 class ScanRegion(object):
     """Class to represent the entire region being scanned, consisting of 
     one or more non-overlapping continuous regions"""
-    def __init__(self,home,spectrometer=None,alt = None,bearing=None):
+
+    VEHICLES='quadcopter','fullscale'
+    
+    def __init__(self,home,spectrometer=None,alt = None,bearing=None,
+            vehicle='quadcopter',overshoot=0,find_scanline_bounds=False):
         self._home = home
         self._scanareas = []
         self._waypoints = []
         self._spectrometer = spectrometer
         self._alt = alt 
         self._bearing = bearing
+        self._sidelap = 0
         self._coords = None
+        self._overshoot = overshoot
+        self._vehicle = 'quadcopter'
+        self._find_bounds = find_scanline_bounds
 
     def addWayPoint(self,waypoint):
         self._waypoints.append(waypoint)
@@ -328,15 +391,37 @@ class ScanRegion(object):
         scanarea.setBearing(self._bearing)
         self._scanareas.append(scanarea)
 
+    #so many setters I think I went wrong somewhere
     def setAltitude(self,altitude):
         self._alt = altitude
         for sa in self.scanAreas:
             sa.setAltitude(self._alt)
 
+    def setFindScanLineBounds(self,find_bounds):
+        self._find_bounds = find_bounds
+        for sa in self.scanAreas:
+            sa.setFindScanLineBounds(self._find_bounds)
+
     def setSpectrometer(self,spectrometer):
         self._spectrometer = spectrometer
         for sa in self.scanAreas:
             sa.setSpectrometer(self._spectrometer)
+
+    def setVehicle(self,vehicle):
+        if not vehicle in self.VEHICLES:
+            raise ValueError("Vehicle {} not supported.".format(vehicle))
+        else:
+            self._vehicle = vehicle
+
+    def setOvershoot(self,overshoot):
+        self._overshoot = overshoot
+        for sa in self.scanAreas:
+            sa.setOvershoot(self._overshoot)
+
+    def setSidelap(self,sidelap):
+        self._sidelap = sidelap
+        for sa in self.scanAreas:
+            sa.setSidelap(self._sidelap)
 
     def setBearing(self,bearing):
         if bearing == 90:
@@ -391,10 +476,13 @@ class ScanRegion(object):
         self._reorderScanAreas()
         for sa in self.scanAreas:
             sa.setHome(home)
-            new_coords = sa.findScanLines()[1:-1]
+            new_coords = sa.findScanLines()[1:]
             self._coords+= new_coords
             home = self._coords[-1]
-
+        
+        if self._vehicle == 'fullscale':
+            #full-scale airplanes don't need a home to be set
+            self._coords = self._coords[1:]
         return self._coords
 
     @property
@@ -414,11 +502,18 @@ class ScanRegion(object):
     def scanVelocity(self):
         return self._spectrometer.squareScanSpeedAt(self._alt)
 
+    @property
+    def scanLineBoundBoxes(self):
+        boxes = []
+        for sa in self._scanareas:
+            boxes += sa.scanLineBoundBoxes
+        return boxes
+
     def plot(self,show=True):
         for sa in self.scanAreas[:-1]:
-            sa.plot(show=False,include='perimeter')
+            sa.plot(show=False,include=['perimeter','bounds'])
         self.scanAreas[-1]._plotPoints(self._coords,color='r',lw=2)
-        self.scanAreas[-1].plot(show=True,include='perimeter')
+        self.scanAreas[-1].plot(show=True,include=['perimeter','bounds'])
 
     def toWayPoints(self,fname):
         if self._coords is None:
@@ -495,9 +590,14 @@ if __name__ == '__main__':
         region.setBearing(int(sys.argv[4]))
     else:
         region.setBearing(45)
+    if len(sys.argv) > 5:
+        region.setSidelap(float(sys.argv[5]))
+    region.setFindScanLineBounds(True)
     scanner = Spectrometer.HeadwallNanoHyperspec()
     scanner.setFramePeriod(0.005)
     region.setSpectrometer(scanner)
+    region.setOvershoot(0)
+    region.setVehicle('fullscale')
 
     region.findScanLines()
     region.toWayPoints(sys.argv[2])

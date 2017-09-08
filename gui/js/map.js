@@ -105,6 +105,7 @@ var userDrawnRegion = {
                 //right click the area to delete it
                 newPoly.setMap(null);
                 self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
+                if(self.drawnAreas.length==0) external.setHome(null);
             });
 
             _.each(self.vertexMarkers,(m)=>m.setMap(null));
@@ -160,6 +161,7 @@ var userDrawnRegion = {
                 editable:false
             });
         });
+        $('#infile').html(noFileLoadedText);
 
     },
     hasDrawnRegions: function(){
@@ -182,14 +184,45 @@ var setHomeMarker = function(latlng){
     });
     homeMarker.setMap(map);
     homeMarker.addListener('dragend',function(event){
-        external.setHome(event.latLng.lat(),event.latLng.lng());   
+        external.setHome(toPyCoords(event.latLng));   
         resetHome = false;
         generatePath()
     });
 
 };
-var scanPath;
 
+var scanLines=[];
+var scanLineBounds=[];
+var setAirplaneScanPath = function(latlngs,scanlines){
+    if(scanLines.length > 0){
+        _.each(scanLines,(line)=>line.setMap(null));
+        _.each(scanLineBounds,(box)=>box.setMap(null));
+    };
+    
+    _.each(_.groupBy(latlngs,(ll,idx)=>Math.floor(idx/4)),function(lls,idx){
+        scanLines.push(new google.maps.Polyline({
+            path:lls,
+            geodesic:true,
+            strokeColor: '#FF0000',
+            strokeOpacity:1.0,
+            strokeWeight: 3,
+            map:map,
+            zIndex:999
+        }));
+        scanLineBounds.push(new google.maps.Polygon({
+                paths:_.map(scanlines[idx],(c)=>cleanPyCoords(c)),
+                strokeColor:'#0000ff',
+                strokeOpacity:0,
+                strokeWeight:0,
+                fillColor: '#0000ff',
+                fillOpacity: 0.35,
+                map:map
+        }));
+    });
+
+};
+
+var scanPath;
 var setScanPath = function(latlngs){
     if(scanPath) scanPath.setMap(null);
     scanPath = new google.maps.Polyline({
@@ -278,16 +311,19 @@ var generatePath = function(){
     if(!($('#alt').val()&&$('#bearing').val())) return;
     if(!loadFromDrawing && $('#infile').html() == noFileLoadedText) return;
     var coords = (loadFromDrawing)?userDrawnRegion.getCoords():false;
-    console.log(coords);
-    external.createPath(coords,function(coords,bounds,dist,speed){
+    external.createPath(coords,function(coords,bounds,dist,speed,scanlines){
         coords = _.map(coords,(c)=>cleanPyCoords(c));
         bounds = _.map(bounds,(c)=>cleanPyCoords(c));
         $('#scan_len').html(dist);
         setScanSpeed(speed);
 
-        setScanPath(coords);
+        if(scanlines)
+            setAirplaneScanPath(coords,scanlines);
+        else
+            setScanPath(coords);
+
         if(resetHome){
-            setHomeMarker(coords[0]);
+            //setHomeMarker(coords[0]);
             if(!loadFromDrawing){
                 setBoundBox(bounds);
             }
@@ -301,6 +337,8 @@ $(document).ready(function(){
     $('#infile').click(function(){
         external.loadFile(function(file){
             loadFromDrawing=false;
+            resetHome=true;
+            external.setHome(null);
             $('#infile').html("File: "+file);
             generatePath();
         });
@@ -309,7 +347,7 @@ $(document).ready(function(){
     //bind functions to buttons
     $('#clear_draw').click(function(){
         userDrawnRegion.clearDrawing();
-        resetHome=true;
+        external.setHome(null);
     });    
     $('#start_draw').click(function(){
         inDrawMode = true;
