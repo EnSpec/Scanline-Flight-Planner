@@ -23,15 +23,12 @@ class External(object):
         self._home = None
         self._region = None
         self._spectrometer = None
+        self._vehicle="fullscale"
+        self._overshoot = 1 
     
-    def echo(self,js_callback):
-        try:
-            js_callback.Call(self.ser.recieve_chars(),self.noop)
-        except AttributeError as e:
-            return
-        except Exception as e:
-            self.raise_serial_err(e)
-
+    #getter/setter hell
+    def setOvershoot(self,val):
+        self._overshoot = max(1,val)
 
     def setHome(self,val):
         self._home = val
@@ -50,6 +47,10 @@ class External(object):
     
     def setSpectrometer(self,val):
         self._spectrometer = Spectrometer.spectrometerByName(val)()
+
+    def setVehicle(self,val):
+        self._vehicle = vehicle
+
     def getScanSpeed(self,js_callback):
         if self._region:
             self._region._spectrometer.setFramePeriod(self._scan_pd)
@@ -67,15 +68,18 @@ class External(object):
 
     def polygonizePoints(self,points,js_callback):
         area = ScanArea.ScanArea(points[0],points)
-        print(area._perimeter)
         js_callback.Call(area._perimeter,self.noop)
+
+    def centerOfPoints(self,points,js_callback):
+        area = ScanArea.ScanArea(points[0],points)
+        js_callback.Call(area._center,self.noop)
 
     def createPath(self,coords,js_callback):
         if coords:
             region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home)
         else:
             region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
-        region.setVehicle('fullscale')
+        region.setVehicle(self._vehicle)
         region.setAltitude(self._alt)
         region.setBearing(self._bearing)
         region.setFindScanLineBounds(True)
@@ -94,10 +98,11 @@ class External(object):
     def savePath(self):
         if self._region is None:
             return
-        fname = filedialog.askopenfilename()
+        fname = filedialog.askdirectory()
+
         if isinstance(fname,str):
             try:
-                self._region.toWayPoints(fname)
+                self._region.toShapeFile(fname)
             except FileNotFoundError:
                 pass
 

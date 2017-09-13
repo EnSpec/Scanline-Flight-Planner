@@ -389,3 +389,198 @@ FileNotFoundError: [Errno 2] No such file or directory: ''
     latr0 = radians(start['lat'])
 TypeError: 'int' object is not subscriptable
 
+
+[2017-09-10 17:24:13] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 69, in polygonizePoints
+    area = ScanArea.ScanArea(points[0],points)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 103, in __init__
+    self.setBearing(bearing)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 137, in setBearing
+    self._arrangePerimeter(self._perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 169, in _arrangePerimeter
+    self._center = self._computeCenter(perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 162, in _computeCenter
+    center = geometry.Polygon(coordlist).cetroid.coords
+AttributeError: 'Polygon' object has no attribute 'cetroid'
+
+
+[2017-09-10 17:25:10] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 69, in polygonizePoints
+    area = ScanArea.ScanArea(points[0],points)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 103, in __init__
+    self.setBearing(bearing)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 137, in setBearing
+    self._arrangePerimeter(self._perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 169, in _arrangePerimeter
+    self._center = self._computeCenter(perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 163, in _computeCenter
+    return {'lat':center[0],'lon':center[1]}
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/coords.py", line 78, in __getitem__
+    raise IndexError("index out of range")
+IndexError: index out of range
+
+
+[2017-09-10 17:26:14] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 69, in polygonizePoints
+    area = ScanArea.ScanArea(points[0],points)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 103, in __init__
+    self.setBearing(bearing)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 137, in setBearing
+    self._arrangePerimeter(self._perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 170, in _arrangePerimeter
+    self._center = self._computeCenter(perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 164, in _computeCenter
+    return {'lat':center[0],'lon':center[1]}
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/coords.py", line 78, in __getitem__
+    raise IndexError("index out of range")
+IndexError: index out of range
+
+
+[2017-09-13 12:04:42] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 97, in savePath
+    fname = filedialog.asksavefilename()
+AttributeError: module 'tkinter.filedialog' has no attribute 'asksavefilename'
+
+
+[2017-09-13 12:08:12] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 102, in savePath
+    self._region.toShapeFile(fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 535, in toShapeFile
+    self._coords,self.scanLineBoundBoxes,self._alt,speed)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/SHPParse.py", line 34, in flightPlanFromCoords
+    for i in range(len(coords)/4):
+TypeError: 'float' object cannot be interpreted as an integer
+
+
+[2017-09-13 12:08:55] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 102, in savePath
+    self._region.toShapeFile(fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 535, in toShapeFile
+    self._coords,self.scanLineBoundBoxes,self._alt,speed)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/SHPParse.py", line 39, in flightPlanFromCoords
+    bounds = coordDictListToCoord2DList(scanlinebounds[i],0)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/SHPParse.py", line 30, in coordDictListToCoord2DList
+    return map(coord_dict_list,lambda c:[c['lon'],c['lat'],alt])
+TypeError: 'function' object is not iterable
+
+
+[2017-09-13 12:12:03] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 102, in savePath
+    self._region.toShapeFile(fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 535, in toShapeFile
+    self._coords,self.scanLineBoundBoxes,self._alt,speed)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/SHPParse.py", line 40, in flightPlanFromCoords
+    w.poly(parts=bounds)
+NameError: name 'w' is not defined
+
+
+[2017-09-13 12:12:59] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 102, in savePath
+    self._region.toShapeFile(fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 535, in toShapeFile
+    self._coords,self.scanLineBoundBoxes,self._alt,speed)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/SHPParse.py", line 43, in flightPlanFromCoords
+    writer.poly(parts=line,shapeType=shapefile.POLYLINE)
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapefile.py", line 1036, in poly
+    point = list(point)
+TypeError: 'numpy.float64' object is not iterable
+
+
+[2017-09-13 13:58:50] Traceback (most recent call last):
+  File "shapely/speedups/_speedups.pyx", line 231, in shapely.speedups._speedups.geos_linearring_from_py
+AttributeError: 'list' object has no attribute '__array_interface__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 74, in centerOfPoints
+    area = ScanArea.ScanArea(points[0],points)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 103, in __init__
+    self.setBearing(bearing)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 137, in setBearing
+    self._arrangePerimeter(self._perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 170, in _arrangePerimeter
+    self._center = self._computeCenter(perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 162, in _computeCenter
+    center = geometry.Polygon(coordlist).centroid.coords
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/geometry/polygon.py", line 231, in __init__
+    ret = geos_polygon_from_py(shell, holes)
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/geometry/polygon.py", line 483, in geos_polygon_from_py
+    ret = geos_linearring_from_py(shell)
+  File "shapely/speedups/_speedups.pyx", line 318, in shapely.speedups._speedups.geos_linearring_from_py
+ValueError: A LinearRing must have at least 3 coordinate tuples
+
+
+[2017-09-13 13:59:32] Traceback (most recent call last):
+  File "shapely/speedups/_speedups.pyx", line 231, in shapely.speedups._speedups.geos_linearring_from_py
+AttributeError: 'list' object has no attribute '__array_interface__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 74, in centerOfPoints
+    area = ScanArea.ScanArea(points[0],points)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 103, in __init__
+    self.setBearing(bearing)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 137, in setBearing
+    self._arrangePerimeter(self._perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 170, in _arrangePerimeter
+    self._center = self._computeCenter(perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 162, in _computeCenter
+    center = geometry.Polygon(coordlist).centroid.coords
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/geometry/polygon.py", line 231, in __init__
+    ret = geos_polygon_from_py(shell, holes)
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/geometry/polygon.py", line 483, in geos_polygon_from_py
+    ret = geos_linearring_from_py(shell)
+  File "shapely/speedups/_speedups.pyx", line 318, in shapely.speedups._speedups.geos_linearring_from_py
+ValueError: A LinearRing must have at least 3 coordinate tuples
+
+
+[2017-09-13 14:00:18] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 75, in centerOfPoints
+    js_callback.call(area._center,self.noop)
+AttributeError: 'cefpython_py35.JavascriptCallback' object has no attribute 'call'
+
+
+[2017-09-13 14:07:20] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 81, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 587, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+
+
+[2017-09-13 14:07:57] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 90, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 482, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 290, in findScanLines
+    parallel_dir2,self._coords[-1],first_point)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 236, in _findIntersectionsInDirection
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 236, in <lambda>
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 43, in length
+    self._length = llmath.distanceTo(self.start,self.end)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: 'int' object is not subscriptable
+

@@ -5,6 +5,7 @@ import Spectrometer
 import KMLParse
 import SHPParse
 import WaypointParse
+from shapely import geometry
 import os
 
 
@@ -156,9 +157,11 @@ class ScanArea(object):
         rather than geographic, hopefully it doesn't make that much of a
         difference on the scale we're working at.
         """
-        center = np.mean([[p['lat'],p['lon']]for p in perimeter],axis=0)
-        center = {'lat':center[0],'lon':center[1]}
-        return center
+        #use Shapely's builtin centroid calculator
+        coordlist = [(l['lat'],l['lon'])for l in self._perimeter]
+        center = geometry.Polygon(coordlist).centroid.coords
+        print(center)
+        return {'lat':center[0][0],'lon':center[0][1]}
 
     def _arrangePerimeter(self,perimeter):
         """Arrange the perimiter clockwise,then select the point nearest home
@@ -516,11 +519,21 @@ class ScanRegion(object):
         self.scanAreas[-1].plot(show=True,include=['perimeter','bounds'])
 
     def toWayPoints(self,fname):
+        assert self._vehicle == 'quadcopter'
         if self._coords is None:
             self.findScanLines()
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
         WaypointParse.waypointsFromCoords(fname,
                 self._coords,self._alt,self._bearing,speed)
+
+    def toShapeFile(self,fname):
+        assert self._vehicle == 'fullscale'
+        if self._coords is None:
+            self.findScanLines()
+        speed = self._spectrometer.squareScanSpeedAt(self._alt)
+        SHPParse.flightPlanFromCoords(fname,
+                self._coords,self.scanLineBoundBoxes,self._alt,speed)
+        
     
     @classmethod
     def from2DLatLonArray(Cls,coords,home=None,**kwargs):
@@ -596,9 +609,8 @@ if __name__ == '__main__':
     scanner = Spectrometer.HeadwallNanoHyperspec()
     scanner.setFramePeriod(0.005)
     region.setSpectrometer(scanner)
-    region.setOvershoot(0)
+    region.setOvershoot(30)
     region.setVehicle('fullscale')
 
     region.findScanLines()
-    region.toWayPoints(sys.argv[2])
-    region.plot()
+    region.toShapeFile(sys.argv[2])

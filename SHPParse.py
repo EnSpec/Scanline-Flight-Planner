@@ -1,4 +1,5 @@
 import shapefile
+import os
 
 SHAPE_TYPES={'Polygon':5,'Point':1}
 KEYS = 'lon','lat'
@@ -25,3 +26,38 @@ def findRegionType(shpfile,types_to_check=("Polygon","Point")):
             if shape.shapeType == SHAPE_TYPES[t]:
                 return t
     return None
+
+def coordDictListToCoord2DList(coord_dict_list,alt=0):
+    coords = list(map(lambda c:[c['lon'],c['lat'],alt],coord_dict_list))
+    nested_coords = [[p1,p2]for p1,p2 in zip(coords[::2],coords[1::2])]
+    return [coords]
+
+def flightPlanFromCoords(outpath,coords,scanlinebounds,alt,speed):
+    if not os.path.isdir(outpath):
+        os.makedirs(outpath)
+    linew = shapefile.Writer(shapefile.POLYLINE)
+    linew.field('idx','N',10)
+    footw = shapefile.Writer(shapefile.POLYGON)
+    footw.field('idx','N',10)
+    pointw = shapefile.Writer(shapefile.POINT)
+    pointw.field('idx','N',10)
+    pointw.field('type','C',40)
+    for i in range(int(len(coords)/4)):
+        #write the scan area first
+        bounds = coordDictListToCoord2DList(scanlinebounds[i],0)
+        footw.poly(parts=bounds)
+        footw.record(str(i),'Scanline Bounds')
+        #then the flight line
+        line=coordDictListToCoord2DList(coords[4*i:4*i+4])
+        linew.poly(parts=line,shapeType=shapefile.POLYLINE)
+        linew.record(i)
+        #then the start/end/entry/exit points of the flight line
+        pointw.point(*line[0][0])
+        pointw.point(*line[0][1])
+        pointw.point(*line[0][2])
+        pointw.point(*line[0][3])
+        [pointw.record(i,p)for p in["START","ENTER","EXIT","END"]]
+
+    linew.save(os.path.join(outpath,'scanlines'))
+    footw.save(os.path.join(outpath,'footprints'))
+    pointw.save(os.path.join(outpath,'points'))

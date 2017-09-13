@@ -14,9 +14,9 @@
 </head>
 <body>
     <div class="container">
-        <div class="row" >
-            <div class="col-9">
-                <h3>Scan Route Preview</h3>
+        <div class="row"><h3>Scan Route Preview</h3></div>
+        <div class="row">
+            <div class="col-12">
                 <div id="map"></div>
             </div>
         </div>
@@ -41,10 +41,17 @@
             </div>
             <div class="col-3">
                 <div class="row">
+                    <p><select id="vehicle">
+                        <option selected value="quadcopter">Quadcopter</option>
+                        <option value="fullscale">Full-Scale Airplane</option>
+                       </select>
+                    </p>
+                </div>
+                <div class="row">
                 <p>Scan Altitude: <input type="text" style="width:3em" id="alt"value=45> m</p>
                 </div>
                 <div class="row">
-                <p>Scan Bearing: <input type="text" style="width:3em" id="bearing"value=45>&deg;</p>
+                <p>Scan Overshoot: <input type="text" style="width:3em" id="bearing"value=45> m</p>
                 </div>
             </div>
             <div class="col-3">
@@ -58,6 +65,7 @@
                         <option>Norsk Elektro Optikk HySpex</option>
                     </select></p>
                     <p>Frame Period: <input type="text" style="width:3em" id="frame_pd"value=2> ms</p>
+                    <p>Scan Bearing: <input type="text" style="width:3em" id="bearing"value=45>&deg;</p>
                 </div>
             </div>
             <div class="col-3">

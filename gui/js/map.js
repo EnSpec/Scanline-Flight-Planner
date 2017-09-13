@@ -51,18 +51,14 @@ var userDrawnRegion = {
 
     },
     findCenter: function(){
-        if(this.vertexMarkers.length < 2) return;
+        if(this.vertexMarkers.length < 3) return;
 
-        var center = {lat:0,lng:0};
-
-        _.each(this.vertexMarkers,function(m){
-            center.lat+=m.getPosition().lat();
-            center.lng+=m.getPosition().lng();
+        var coords=_.map(this.vertexMarkers,(m)=>toPyCoords(m.getPosition()));
+        var self = this;
+        external.centerOfPoints(coords,function(center){
+            self.centerPlus.setMap(map);
+            self.centerPlus.setPosition(cleanPyCoords(center));
         });
-        center.lat/=this.vertexMarkers.length;
-        center.lng/=this.vertexMarkers.length;
-        this.centerPlus.setMap(map);
-        this.centerPlus.setPosition(center);
 
     },
 
@@ -143,6 +139,8 @@ var userDrawnRegion = {
     enterDrawMode:function(){
         if(scanPath) scanPath.setMap(null);
         if(homeMarker) homeMarker.setMap(null);
+        if(scanLines.length)_.each(scanLines,(s)=>s.setMap(null));
+        if(scanLineBounds.length)_.each(scanLineBounds,(s)=>s.setMap(null));
         _.each(this.drawnAreas,function(area){
             area.setOptions({
                 fillOpacity: 0.35,
@@ -317,7 +315,7 @@ var generatePath = function(){
         $('#scan_len').html(dist);
         setScanSpeed(speed);
 
-        if(scanlines)
+        if($('#vehicle').val()=='fullscale')
             setAirplaneScanPath(coords,scanlines);
         else
             setScanPath(coords);
