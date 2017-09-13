@@ -584,3 +584,22 @@ AttributeError: 'NoneType' object has no attribute 'rfind'
     latr0 = radians(start['lat'])
 TypeError: 'int' object is not subscriptable
 
+
+[2017-09-13 14:25:42] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 90, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 482, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 284, in findScanLines
+    parallel_dir1,self._perimeter[2],first_point)[::first_traverse]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 236, in _findIntersectionsInDirection
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 236, in <lambda>
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 43, in length
+    self._length = llmath.distanceTo(self.start,self.end)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: 'int' object is not subscriptable
+

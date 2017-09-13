@@ -41,11 +41,14 @@
             </div>
             <div class="col-3">
                 <div class="row">
-                    <p><select id="vehicle">
-                        <option selected value="quadcopter">Quadcopter</option>
-                        <option value="fullscale">Full-Scale Airplane</option>
-                       </select>
-                    </p>
+                    <p><select id="spectrometer">
+                        <option>AVIRIS Classic</option>
+                        <option>AVIRIS Next Gen</option>
+                        <option selected>Headwall Nano Hyperspec</option>
+                        <option>Headwall VNIR-SWIR co-boresi</option>
+                        <option>Specim FENIX</option>
+                        <option>Norsk Elektro Optikk HySpex</option>
+                    </select></p>
                 </div>
                 <div class="row">
                 <p>Scan Altitude: <input type="text" style="width:3em" id="alt"value=45> m</p>
@@ -56,16 +59,13 @@
             </div>
             <div class="col-3">
                 <div class="row">
-                    <p><select id="spectrometer">
-                        <option>AVIRIS Classic</option>
-                        <option>AVIRIS Next Gen</option>
-                        <option selected>Headwall Nano Hyperspec</option>
-                        <option>Headwall VNIR-SWIR co-boresi</option>
-                        <option>Specim FENIX</option>
-                        <option>Norsk Elektro Optikk HySpex</option>
-                    </select></p>
-                    <p>Frame Period: <input type="text" style="width:3em" id="frame_pd"value=2> ms</p>
+                    <p><select id="vehicle">
+                        <option selected value="quadcopter">Quadcopter</option>
+                        <option value="fullscale">Full-Scale Airplane</option>
+                       </select>
+                    </p>
                     <p>Scan Bearing: <input type="text" style="width:3em" id="bearing"value=45>&deg;</p>
+                    <p>Frame Period: <input type="text" style="width:3em" id="frame_pd"value=2> ms</p>
                 </div>
             </div>
             <div class="col-3">
