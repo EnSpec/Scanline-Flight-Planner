@@ -226,14 +226,13 @@ class ScanArea(object):
             #append new_points to dir_coords such that the new_point closer 
             #to the last coord is added first
             if len(new_points) > 0:
-                print(len(new_points))
                 #if we cross multiple times (eg in a concave area), just take
                 #the two most extreme
                 if len(new_points) > 2:
                     n = len(new_points)
-                    combos = [(i,j) for i in range(n)for j in range(i,n)]
-                    new_edge = sorted([Edge(*c)for c in combos],
-                            key=lambda x:x.length)[-1]
+                    combos = [(i,j+1,j-i)for i in range(n)for j in range(i+1,n)]
+                    new_edge = sorted([Edge(*new_points[slice(*c)])
+                        for c in combos], key=lambda x:x.length)[-1]
                 else:
                     new_edge = Edge(*new_points)
 

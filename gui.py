@@ -12,6 +12,7 @@ import Spectrometer
 from tkinter import Tk,filedialog
 Tk().withdraw()
 
+
 class External(object):
     noop = lambda:None
 
@@ -23,33 +24,50 @@ class External(object):
         self._home = None
         self._region = None
         self._spectrometer = None
-        self._vehicle="fullscale"
-        self._overshoot = 1 
+        self._vehicle="quadcopter"
+        self._overshoot = 30 
+        self._sidelap = .2
     
-    #getter/setter hell
+    def _isfloat(self,val):
+        try:
+            float(val)
+            return True
+        except:
+            return False
+
+    #setter hell
     def setOvershoot(self,val):
-        self._overshoot = max(1,val)
+        if(self._isfloat(val)):
+            self._overshoot = max(1,float(val))
+
+    def setSidelap(self,val):
+        if(self._isfloat(val)):
+            self._sidelap = float(val)/100.
 
     def setHome(self,val):
         self._home = val
 
     def setAlt(self,val):
-        self._alt = float(val)
+        if(self._isfloat(val)):
+            self._alt = float(val)
 
     def setScanPd(self,val):
-        self._scan_pd = float(val)
+        if(self._isfloat(val)):
+            self._scan_pd = float(val)
 
     def setBearing(self,val):
-        self._bearing = float(val)
+        if(self._isfloat(val)):
+            self._bearing = float(val)
 
     def setScanPeriod(self,val):
-        self._scan_pd = float(val)
+        if(self._isfloat(val)):
+            self._scan_pd = float(val)
     
     def setSpectrometer(self,val):
         self._spectrometer = Spectrometer.spectrometerByName(val)()
 
     def setVehicle(self,val):
-        self._vehicle = vehicle
+        self._vehicle = val
 
     def getScanSpeed(self,js_callback):
         if self._region:
@@ -77,16 +95,20 @@ class External(object):
     def createPath(self,coords,js_callback):
         if coords:
             region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home)
-        else:
+        elif self._fname:
             region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+        else:
+            return
         region.setVehicle(self._vehicle)
         region.setAltitude(self._alt)
         region.setBearing(self._bearing)
+        region.setSidelap(self._sidelap)
+        region.setOvershoot(self._overshoot)
+
         region.setFindScanLineBounds(True)
         scanner = self._spectrometer or Spectrometer.HeadwallNanoHyperspec()
         scanner.setFramePeriod(self._scan_pd)
         region.setSpectrometer(scanner)
-        region.setOvershoot(30)
         coords = region.findScanLines()
         bounds= region.boundBox
         scanlines=region.scanLineBoundBoxes
@@ -98,13 +120,21 @@ class External(object):
     def savePath(self):
         if self._region is None:
             return
-        fname = filedialog.askdirectory()
+        if self._vehicle == 'fullscale':
+            fname = filedialog.askdirectory()
+            if isinstance(fname,str):
+                try:
+                    self._region.toShapeFile(fname)
+                except FileNotFoundError:
+                    pass
+        if self._vehicle == 'quadcopter':
+            fname = filedialog.asksaveasfilename()
+            if isinstance(fname,str):
+                try:
+                    self._region.toWayPoints(fname)
+                except FileNotFoundError:
+                    pass
 
-        if isinstance(fname,str):
-            try:
-                self._region.toShapeFile(fname)
-            except FileNotFoundError:
-                pass
 
 def main():
     script_dir = os.path.dirname(os.path.realpath(__file__))

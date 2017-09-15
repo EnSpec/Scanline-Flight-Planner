@@ -603,3 +603,143 @@ TypeError: 'int' object is not subscriptable
     latr0 = radians(start['lat'])
 TypeError: 'int' object is not subscriptable
 
+
+[2017-09-15 12:49:09] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 52, in setVehicle
+    self._vehicle = vehicle
+NameError: name 'vehicle' is not defined
+
+
+[2017-09-15 13:19:37] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 81, in createPath
+    region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 587, in fromFile
+    ext = os.path.splitext(fname)[1].lower()
+  File "/home/mwestphall/anaconda3/lib/python3.5/posixpath.py", line 122, in splitext
+    return genericpath._splitext(p, sep, None, extsep)
+  File "/home/mwestphall/anaconda3/lib/python3.5/genericpath.py", line 118, in _splitext
+    sepIndex = p.rfind(sep)
+AttributeError: 'NoneType' object has no attribute 'rfind'
+
+
+[2017-09-15 13:21:32] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 92, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 482, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 290, in findScanLines
+    parallel_dir2,self._coords[-1],first_point)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 236, in _findIntersectionsInDirection
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 236, in <lambda>
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 43, in length
+    self._length = llmath.distanceTo(self.start,self.end)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: 'int' object is not subscriptable
+
+
+[2017-09-15 14:16:44] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 32, in setOvershoot
+    self._overshoot = max(1,val)
+TypeError: unorderable types: str() > int()
+
+
+[2017-09-15 14:24:27] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 47, in setBearing
+    self._bearing = float(val)
+ValueError: could not convert string to float: 
+
+
+[2017-09-15 14:55:31] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 112, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 482, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 284, in findScanLines
+    parallel_dir1,self._perimeter[2],first_point)[::first_traverse]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 236, in _findIntersectionsInDirection
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 236, in <lambda>
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 43, in length
+    self._length = llmath.distanceTo(self.start,self.end)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: 'int' object is not subscriptable
+
+
+[2017-09-15 14:58:22] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 112, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 483, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 291, in findScanLines
+    parallel_dir2,self._coords[-1],first_point)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 237, in _findIntersectionsInDirection
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 237, in <lambda>
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 44, in length
+    self._length = llmath.distanceTo(self.start,self.end)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: 'int' object is not subscriptable
+
+
+[2017-09-15 14:59:52] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 112, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 483, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 291, in findScanLines
+    parallel_dir2,self._coords[-1],first_point)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 237, in _findIntersectionsInDirection
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 237, in <lambda>
+    key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 44, in length
+    self._length = llmath.distanceTo(self.start,self.end)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: 'int' object is not subscriptable
+
+
+[2017-09-15 15:11:51] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 112, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 483, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 291, in findScanLines
+    parallel_dir2,self._coords[-1],first_point)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 237, in _findIntersectionsInDirection
+    for c in combos], key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 237, in <listcomp>
+    for c in combos], key=lambda x:x.length)[-1]
+TypeError: __init__() missing 1 required positional argument: 'p2'
+
+
+[2017-09-15 15:12:58] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 112, in createPath
+    coords = region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 483, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 285, in findScanLines
+    parallel_dir1,self._perimeter[2],first_point)[::first_traverse]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 237, in _findIntersectionsInDirection
+    for c in combos], key=lambda x:x.length)[-1]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 237, in <listcomp>
+    for c in combos], key=lambda x:x.length)[-1]
+TypeError: __init__() missing 1 required positional argument: 'p2'
+

@@ -71,6 +71,12 @@ var userDrawnRegion = {
             icon:self.vertexImage
         });
         newMarker.addListener('dragend',function(){self.findCenter()});
+        newMarker.addListener('rightclick',function(){
+            if(!inDrawMode) return;
+            newMarker.setMap(null);
+            self.vertexMarkers.splice(self.vertexMarkers.indexOf(newMarker),1);
+            self.findCenter();
+        });
         this.vertexMarkers.push(newMarker);
         this.findCenter();
 
@@ -154,7 +160,7 @@ var userDrawnRegion = {
         //this.closeVertices();
         _.each(this.drawnAreas,function(area){
             area.setOptions({
-                fillOpacity: 0.05,
+                fillOpacity: 0.0,
                 draggable: false,
                 editable:false
             });
@@ -191,7 +197,11 @@ var setHomeMarker = function(latlng){
 
 var scanLines=[];
 var scanLineBounds=[];
+var scanPath;
+
 var setAirplaneScanPath = function(latlngs,scanlines){
+    if(scanPath) scanPath.setMap(null);
+    if(homeMarker) homeMarker.setMap(null);
     if(scanLines.length > 0){
         _.each(scanLines,(line)=>line.setMap(null));
         _.each(scanLineBounds,(box)=>box.setMap(null));
@@ -212,17 +222,20 @@ var setAirplaneScanPath = function(latlngs,scanlines){
                 strokeColor:'#0000ff',
                 strokeOpacity:0,
                 strokeWeight:0,
-                fillColor: '#0000ff',
-                fillOpacity: 0.35,
+                fillColor: '#4B0082',
+                fillOpacity: 0.40,
                 map:map
         }));
     });
 
 };
 
-var scanPath;
 var setScanPath = function(latlngs){
     if(scanPath) scanPath.setMap(null);
+    if(scanLines.length > 0){
+        _.each(scanLines,(line)=>line.setMap(null));
+        _.each(scanLineBounds,(box)=>box.setMap(null));
+    };
     scanPath = new google.maps.Polyline({
         path:latlngs,
         geodesic:true,
@@ -321,7 +334,8 @@ var generatePath = function(){
             setScanPath(coords);
 
         if(resetHome){
-            //setHomeMarker(coords[0]);
+            if($('#vehicle').val()=='quadcopter')
+                setHomeMarker(coords[0]);
             if(!loadFromDrawing){
                 setBoundBox(bounds);
             }
@@ -348,27 +362,27 @@ $(document).ready(function(){
         external.setHome(null);
     });    
     $('#start_draw').click(function(){
-        inDrawMode = true;
-        loadFromDrawing = true;
-        $('input,select,#generate,#save,#infile').prop('disabled',true);
-        $('#io_panel').hide();
-        $('#draw_panel').show();
-        userDrawnRegion.enterDrawMode();
-        map.setOptions({
-             disableDoubleClickZoom: true
-        });
-    });
-    $('#finish_draw').click(function(){
-        inDrawMode = false;
-        $('#draw_panel').hide();
-        $('#io_panel').show();
-        $('input,select,#generate,#save,#infile').prop('disabled',false);
-        userDrawnRegion.exitDrawMode();
-        if(userDrawnRegion.hasDrawnRegions())
-            generatePath();
-        map.setOptions({
-             disableDoubleClickZoom: false
-        });
+        if(!inDrawMode){
+            inDrawMode = true;
+            loadFromDrawing = true;
+            $('input,select,#generate,#save,#infile').prop('disabled',true);
+            $('#pac-input').prop('disabled',false);
+            $(this).html("Finish Drawing");
+            userDrawnRegion.enterDrawMode();
+            map.setOptions({
+                 disableDoubleClickZoom: true
+            });
+        } else {
+            inDrawMode = false;
+            $('input,select,#generate,#save,#infile').prop('disabled',false);
+            $(this).html("Draw Area");
+            userDrawnRegion.exitDrawMode();
+            if(userDrawnRegion.hasDrawnRegions())
+                generatePath();
+            map.setOptions({
+                 disableDoubleClickZoom: false
+            });
+        }
     });
 
     $('#spectrometer').change(function(){
@@ -380,6 +394,7 @@ $(document).ready(function(){
         generatePath();
     });
     $('#bearing').change(function(){
+        console.log("Bearing!");
         external.setBearing($(this).val());
         generatePath();
     });
@@ -387,6 +402,18 @@ $(document).ready(function(){
         external.setScanPeriod(Number($(this).val())/1000);
         external.getScanSpeed(function(speed){setScanSpeed(speed)});
 
+    });
+    $('#vehicle').change(function(){
+        external.setVehicle($(this).val());
+        generatePath();
+    });
+    $('#overshoot').change(function(){
+        external.setOvershoot($(this).val());
+        generatePath();
+    });
+    $('#sidelap').change(function(){
+        external.setSidelap($(this).val());
+        generatePath();
     });
     $('#save').click(function(){
         external.savePath();
