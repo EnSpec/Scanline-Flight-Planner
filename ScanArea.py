@@ -4,6 +4,7 @@ import time
 import Spectrometer
 import KMLParse
 import SHPParse
+import GPXParse
 import WaypointParse
 from shapely import geometry
 import os
@@ -525,6 +526,14 @@ class ScanRegion(object):
         WaypointParse.waypointsFromCoords(fname,
                 self._coords,self._alt,self._bearing,speed)
 
+    def toGPX(self,fname):
+        assert self._vehicle == 'fullscale'
+        if self._coords is None:
+            self.findScanLines()
+        speed = self._spectrometer.squareScanSpeedAt(self._alt)
+        GPXParse.waypointsFromCoords(fname,
+                self._coords,self._alt,self.boundBox)
+
     def toShapeFile(self,fname):
         assert self._vehicle == 'fullscale'
         if self._coords is None:
@@ -612,4 +621,4 @@ if __name__ == '__main__':
     region.setVehicle('fullscale')
 
     region.findScanLines()
-    region.toShapeFile(sys.argv[2])
+    region.toGPX(sys.argv[2])

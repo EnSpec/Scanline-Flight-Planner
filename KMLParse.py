@@ -1,7 +1,6 @@
-#there are python libraries for parsing kml, but the file's we're dealing with
+#there are python libraries for parsing kml, but the files we're dealing with
 #are simple enough that lxml does the trick
 from lxml import etree
-from contextlib import contextmanager
 
 def findchildren(elem,tag):
     return [c for c in elem.getchildren()if c.tag.endswith(tag)]
