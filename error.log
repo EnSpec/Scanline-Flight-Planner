@@ -743,3 +743,59 @@ TypeError: __init__() missing 1 required positional argument: 'p2'
     for c in combos], key=lambda x:x.length)[-1]
 TypeError: __init__() missing 1 required positional argument: 'p2'
 
+
+[2017-09-27 13:47:39] Traceback (most recent call last):
+  File "shapely/speedups/_speedups.pyx", line 231, in shapely.speedups._speedups.geos_linearring_from_py
+AttributeError: 'list' object has no attribute '__array_interface__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 97, in createPath
+    region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 551, in from2DLatLonArray
+    region.addScanArea(ScanArea(home,perimeter))
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 104, in __init__
+    self.setBearing(bearing)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 138, in setBearing
+    self._arrangePerimeter(self._perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 171, in _arrangePerimeter
+    self._center = self._computeCenter(perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 163, in _computeCenter
+    center = geometry.Polygon(coordlist).centroid.coords
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/geometry/polygon.py", line 231, in __init__
+    ret = geos_polygon_from_py(shell, holes)
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/geometry/polygon.py", line 483, in geos_polygon_from_py
+    ret = geos_linearring_from_py(shell)
+  File "shapely/speedups/_speedups.pyx", line 318, in shapely.speedups._speedups.geos_linearring_from_py
+ValueError: A LinearRing must have at least 3 coordinate tuples
+
+
+[2017-09-27 14:41:01] Traceback (most recent call last):
+  File "shapely/speedups/_speedups.pyx", line 231, in shapely.speedups._speedups.geos_linearring_from_py
+AttributeError: 'list' object has no attribute '__array_interface__'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py35.V8FunctionHandler_Execute (cefpython_py35.cpp:96736)
+  File "gui.py", line 97, in createPath
+    region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 551, in from2DLatLonArray
+    region.addScanArea(ScanArea(home,perimeter))
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 104, in __init__
+    self.setBearing(bearing)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 138, in setBearing
+    self._arrangePerimeter(self._perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 171, in _arrangePerimeter
+    self._center = self._computeCenter(perimeter)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/ScanArea.py", line 163, in _computeCenter
+    center = geometry.Polygon(coordlist).centroid.coords
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/geometry/polygon.py", line 231, in __init__
+    ret = geos_polygon_from_py(shell, holes)
+  File "/home/mwestphall/anaconda3/lib/python3.5/site-packages/shapely/geometry/polygon.py", line 483, in geos_polygon_from_py
+    ret = geos_linearring_from_py(shell)
+  File "shapely/speedups/_speedups.pyx", line 318, in shapely.speedups._speedups.geos_linearring_from_py
+ValueError: A LinearRing must have at least 3 coordinate tuples
+

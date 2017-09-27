@@ -29,11 +29,11 @@
         </div>
         <div class="row">
             <div class="col-3">
-            <p><button id="infile">Load Area from File</button><br>
-            <button id="start_draw">Draw Area</button> <a href='#'>(Help)</a>
+                <p><button id="infile"><u>L</u>oad Area from File</button><br>
+            <button id="start_draw"><u>D</u>raw Area</button> <a href='#'>(Help)</a>
             </p>
             <div id="io_panel">
-                <button id="save">Save Path</button>
+                <button id="save"><u>S</u>ave Path</button>
             </div>
             <div id="draw_panel" style="display:none">
                 <button id="clear_draw">Clear</button>
@@ -52,15 +52,15 @@
                     </select><br></span>
                     <table>
                         <tr>
-                            <td>Scan Altitude: </td>
-                            <td><input type="text" style="width:3em" id="alt"value=45> m</td>
+                            <td>Altitude: </td>
+                            <td><input type="text" style="width:3em" id="alt"value=1000> ft (<span id="alt_m">0</span> m)</td>
                         </tr>
                         <tr>
-                            <td>Scan Overshoot: </td>
-                            <td><input type="text" style="width:3em" id="overshoot"value=30> m</td>
+                            <td>Overshoot: </td>
+                            <td><input type="text" style="width:3em" id="overshoot"value=100> ft (<span id="overshoot_m">0</span> m)</td>
                         </tr>
                         <tr>
-                            <td>Scan Sidelap: </td>
+                            <td>Sidelap: </td>
                             <td><input type="text" style="width:3em" id="sidelap"value=20>%</td>
                         </tr>
                     </table>
@@ -75,11 +75,11 @@
                        <br></span>
                     <table>
                         <tr>
-                            <td>Scan Bearing: </td>
+                            <td>Bearing: </td>
                             <td><input type="text" style="width:3em" id="bearing"value=45>&deg;</td>
                         </tr>
                         <tr>
-                            <td>Frame Period: </td>
+                            <td>Frame: </td>
                             <td><input type="text" style="width:3em" id="frame_pd"value=2> ms</td>
                         </tr>
                     </table>
@@ -88,9 +88,9 @@
             </div>
             <div class="col-3">
                 <div class="row">
-                    <p>Path Length: <span id="scan_len">0</span> km<br>
-                    Flight Velocity: <span id="scan_speed">0</span> m/s<br>
-                    Flight Duration: <span id="scan_time">0:00:00</span><br>
+                    <p>Distance: <span id="scan_len">0</span> mi (<span id="scan_len_km">0</span> km)<br>
+                    Velocity: <span id="scan_speed">0</span> mph (<span id="scan_speed_ms">0</span> m/s)<br>
+                    Duration: <span id="scan_time">0:00:00</span><br>
                     Pixel Size: 
                     <input type="text" style="width:3em" id="px_size" value=0> 
                     m</p>
@@ -100,7 +100,7 @@
     </div>
     <script type="text/javascript" src="js/map.js"></script>
     <script async defer
-    src="https://maps.googleapis.com/maps/api/js?libraries=places&callback=initMap">
+    src="https://maps.googleapis.com/maps/api/js?libraries=places,drawing&callback=initMap">
     </script>
   </body>
 </html>

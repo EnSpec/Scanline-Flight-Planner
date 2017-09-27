@@ -173,8 +173,8 @@ class ScanArea(object):
             home_bearing = llmath.bearingTo(self._center,self._home)
         else:
             home_bearing = (self._bearing-90)%360
-        perimeter.sort(key=lambda x:(llmath.bearingTo(self._center,x)+360-home_bearing)%360)
-        self._perimeter = perimeter
+        #perimeter.sort(key=lambda x:(llmath.bearingTo(self._center,x)+360-home_bearing)%360)
+        #self._perimeter = perimeter
 
     def _buildEdges(self):
         self._edges = []

@@ -18,10 +18,24 @@ var toPyCoords = function(latLng){
     }
 }
 
+
+
+var f2m = function(feet){
+    return Number(feet)*0.3048
+}
+
+var km2mi = function(km){
+    return Number(km)*0.621371
+}
+
+var ms2mph = function(ms){
+    return Number(ms)*2.23694
+}
+
 vertex_url='http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png';
 plus_url='http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png';
 minus_url='http://maps.google.com/mapfiles/kml/paddle/red-square-lv.png';
-//plus_url='https://cdn.pixabay.com/photo/2014/04/02/10/55/plus-304947_960_720.png'
+
 var userDrawnRegion = {
     drawnAreas: [],
     vertexMarkers: [],
@@ -48,6 +62,26 @@ var userDrawnRegion = {
         this.centerPlus.addListener('dblclick',function(){
             self.closeVertices();
         });
+        this.drawingManager = new google.maps.drawing.DrawingManager({
+            drawingMode: google.maps.drawing.OverlayType.MARKER,
+            drawingControl: true,
+            drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes:['polygon'],
+            },
+            polygonOptions: {
+                strokeColor:'#0000ff',
+                strokeOpacity:0.8,
+                strokeWeight:2,
+                fillColor: '#0000ff',
+                fillOpacity: 0.35,
+                draggable: true,
+                editable:true
+            },
+        });    
+        var self = this;
+        google.maps.event.addListener(this.drawingManager,'overlaycomplete',
+                function(event){self.closeVertices(event)});
 
     },
     findCenter: function(){
@@ -63,59 +97,26 @@ var userDrawnRegion = {
     },
 
     addVertex: function(latLng){
-        var self=this;
-        var newMarker = new google.maps.Marker({
-            position:latLng,
-            map:map,
-            draggable:true,
-            icon:self.vertexImage
-        });
-        newMarker.addListener('dragend',function(){self.findCenter()});
-        newMarker.addListener('rightclick',function(){
-            if(!inDrawMode) return;
-            newMarker.setMap(null);
-            self.vertexMarkers.splice(self.vertexMarkers.indexOf(newMarker),1);
-            self.findCenter();
-        });
-        this.vertexMarkers.push(newMarker);
-        this.findCenter();
-
     },
-    closeVertices: function(){
-        //convert coords objects into a list of {lat,lng} pairs so it can be
-        //parsed by CEFPython
-        var coords=_.map(this.vertexMarkers,(m)=>toPyCoords(m.getPosition()));
-        //CefPython ensures the coords are in an order that forms a convex
-        //polygon
+    closeVertices: function(event){
+        //add the newly drawn poly to our list so that we can pass it to
+        //gui.py once the user's done drawing
+        var newPoly = event.overlay;
+        //sometimes a poly doesn't get completed, in that case delete it
+        if(newPoly.getPath().getLength() < 3){
+            newPoly.setMap(null);
+            return;
+        }
         var self = this;
-        external.polygonizePoints(coords,function(coords){
-            coords = _.map(coords,(c)=>cleanPyCoords(c));
-            var newPoly = new google.maps.Polygon({
-                paths:coords,
-                strokeColor:'#0000ff',
-                strokeOpacity:0.8,
-                strokeWeight:2,
-                fillColor: '#0000ff',
-                fillOpacity: 0.35,
-                draggable: true,
-                editable:true
-            });
-            newPoly.setMap(map);
-            newPoly.isRightClicked=false;
-            newPoly.addListener('rightclick',function(){
-                if(!inDrawMode) return;
-                //right click the area to delete it
-                newPoly.setMap(null);
-                self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
-                if(self.drawnAreas.length==0) external.setHome(null);
-            });
-
-            _.each(self.vertexMarkers,(m)=>m.setMap(null));
-            self.vertexMarkers=[];
-            self.centerPlus.setMap(null);
-            self.drawnAreas.push(newPoly);
+        console.log(this.drawnAreas);
+        newPoly.addListener('rightclick',function(event){
+            if(!inDrawMode) return;
+            //right click the area to delete it
+            newPoly.setMap(null);
+            self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
+            if(self.drawnAreas.length==0) external.setHome(null);
         });
-
+        this.drawnAreas.push(newPoly);
     },
     getCoords: function(){
         var self = this;
@@ -154,6 +155,8 @@ var userDrawnRegion = {
                 editable:true
             });
         });
+        this.drawingManager.setMap(map);
+        this.drawingManager.setOptions({drawingMode:'polygon'});
 
     },
     exitDrawMode:function(){
@@ -166,6 +169,7 @@ var userDrawnRegion = {
             });
         });
         $('#infile').html(noFileLoadedText);
+        this.drawingManager.setMap(null);
 
     },
     hasDrawnRegions: function(){
@@ -294,7 +298,6 @@ function initMap() {
       });
       map.fitBounds(bounds);
     });
-        
     
     //if we're in draw mode, double clicking should add a vertex rather than
     //zooming in the map
@@ -311,7 +314,8 @@ function initMap() {
 };
 
 var setScanSpeed=function(speed){
-    $('#scan_speed').html(speed);
+    $('#scan_speed').html(Math.round(ms2mph(speed)));
+    $('#scan_speed_ms').html(Math.round(speed));
     var seconds = Math.floor(1000*Number($('#scan_len').html())/Number(speed));
     var date = new Date(null);
     date.setSeconds(seconds);
@@ -325,7 +329,8 @@ var generatePath = function(){
     external.createPath(coords,function(coords,bounds,dist,speed,scanlines){
         coords = _.map(coords,(c)=>cleanPyCoords(c));
         bounds = _.map(bounds,(c)=>cleanPyCoords(c));
-        $('#scan_len').html(dist);
+        $('#scan_len').html(Math.round(km2mi(dist)));
+        $('#scan_len_km').html(Math.round(dist));
         setScanSpeed(speed);
 
         if($('#vehicle').val()=='fullscale')
@@ -365,7 +370,7 @@ $(document).ready(function(){
         if(!inDrawMode){
             inDrawMode = true;
             loadFromDrawing = true;
-            $('input,select,#generate,#save,#infile').prop('disabled',true);
+            $('#generate,#save,#infile').prop('disabled',true);
             $('#pac-input').prop('disabled',false);
             $(this).html("Finish Drawing");
             userDrawnRegion.enterDrawMode();
@@ -374,7 +379,7 @@ $(document).ready(function(){
             });
         } else {
             inDrawMode = false;
-            $('input,select,#generate,#save,#infile').prop('disabled',false);
+            $('#generate,#save,#infile').prop('disabled',false);
             $(this).html("Draw Area");
             userDrawnRegion.exitDrawMode();
             if(userDrawnRegion.hasDrawnRegions())
@@ -390,7 +395,8 @@ $(document).ready(function(){
         generatePath();
     });
     $('#alt').change(function(){
-        external.setAlt($(this).val());
+        external.setAlt(f2m($(this).val()));
+        $('#alt_m').html(Math.floor(f2m($(this).val())));
         generatePath();
     });
     $('#bearing').change(function(){
@@ -408,7 +414,8 @@ $(document).ready(function(){
         generatePath();
     });
     $('#overshoot').change(function(){
-        external.setOvershoot($(this).val());
+        external.setOvershoot(f2m($(this).val()));
+        $('#overshoot_m').html(Math.floor(f2m($(this).val())));
         generatePath();
     });
     $('#sidelap').change(function(){
@@ -418,4 +425,6 @@ $(document).ready(function(){
     $('#save').click(function(){
         external.savePath();
     });
+
+    $('#overshoot, #alt').change();
 });
