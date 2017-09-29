@@ -13,8 +13,43 @@
     <title>NanoSpec Scan Route Plotter</title>
 </head>
 <body>
+    <div id="darken">
+        <div class="container">
+            <div id="help" class="row" style="margin:5px">
+                <div class="col-12" style="padding-top:5px">
+                    <h4>Drawning Help</h4>
+                </div>
+                    <div class="col-md-4">
+                        <h5>Adding a Scan Area:</h5>
+                        <img style="width:100%;padding-bottom:5px" src="img/start_poly.png"/>
+                        <p>After clicking <button>Draw Area</button>
+                        , click on the map to place the vertices of your desired
+                        scan area.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Modifying Scan Areas:</h5>
+                        <img style="width:100%;padding-bottom:5px" src="img/one_poly.png"/>
+                        <p>Click on the the starting vertex again to complete 
+                        the scan area. You can click and drag a completed area
+                        to move it or right click it to delete it. Double click
+                        on the map to begin placing another scan area.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Completing Scan Areas:</h5>
+                        <img style="width:100%;padding-bottom:5px" src="img/done.png"/>
+                        <p>Once you have added all desired scan areas,
+                        click <button>Finish Drawing</button>. A flight path
+                        will automatically be generated through the scan areas.
+                        The route can be adjusted via the control panel at the 
+                        bottom of the page.
+                        </p>
+                    </div>
+                  </div>
+                  </div>
+            </div>
+        </div>
+    </div>
     <div class="container">
-        <div id="help">Hello World!</div>
         <div class="row"><h3>Scan Route Preview</h3></div>
         <div class="row">
             <div class="col-12">
@@ -30,7 +65,8 @@
         <div class="row">
             <div class="col-3">
                 <p><button id="infile"><u>L</u>oad Area from File</button><br>
-            <button id="start_draw"><u>D</u>raw Area</button> <a href='#'>(Help)</a>
+            <button id="start_draw"><u>D</u>raw Area</button> 
+            <a id="summon_help" href='#'> (Help)</a>
             </p>
             <div id="io_panel">
                 <button id="save"><u>S</u>ave Path</button>

@@ -80,10 +80,13 @@ var userDrawnRegion = {
             },
         });    
         var self = this;
+        google.maps.event.addListener(map,'click',function(){
+            self.drawingManager.setOptions({drawingMode:'polygon'});
+        });
         google.maps.event.addListener(this.drawingManager,'overlaycomplete',
                 function(event){self.closeVertices(event)});
-
     },
+
     findCenter: function(){
         if(this.vertexMarkers.length < 3) return;
 
@@ -108,7 +111,6 @@ var userDrawnRegion = {
             return;
         }
         var self = this;
-        console.log(this.drawnAreas);
         newPoly.addListener('rightclick',function(event){
             if(!inDrawMode) return;
             //right click the area to delete it
@@ -116,6 +118,7 @@ var userDrawnRegion = {
             self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
             if(self.drawnAreas.length==0) external.setHome(null);
         });
+        this.drawingManager.setOptions({drawingMode:null});
         this.drawnAreas.push(newPoly);
     },
     getCoords: function(){
@@ -426,5 +429,16 @@ $(document).ready(function(){
         external.savePath();
     });
 
+    $('#summon_help').click(function(){
+        $('#darken').height($(window).height());
+        $('#darken').show();
+        $(window).resize(function(){
+            $('#darken').height($(this).height());
+        });
+    });
+    $('#darken').click(function(){
+        $(this).hide();
+        $(window).unbind('resize');
+    });
     $('#overshoot, #alt').change();
 });
