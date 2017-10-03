@@ -1,13 +1,22 @@
-import LonLatMath as llmath
 import numpy as np
 import time
-import Spectrometer
-import KMLParse
-import SHPParse
-import GPXParse
-import WaypointParse
 from shapely import geometry
 import os
+try:
+    import LonLatMath as llmath
+    import Spectrometer
+    import KMLParse
+    import SHPParse
+    import GPXParse
+    import WaypointParse
+except:
+    from . import LonLatMath as llmath
+    from . import Spectrometer
+    from . import KMLParse
+    from . import SHPParse
+    from . import GPXParse
+    from . import WaypointParse
+
 
 
 class Edge(object):

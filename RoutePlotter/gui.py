@@ -1,14 +1,16 @@
-# Hello world example. Doesn't depend on any third party GUI framework.
-# Tested with CEF Python v55.3+.
-
 from cefpython3 import cefpython as cef
 import platform
 import sys
 import os
 import glob
 import time
-import ScanArea
-import Spectrometer
+try:
+    import ScanArea
+    import Spectrometer
+except ImportError:
+    #don't know how to properly import both standalone and in-module
+    from . import ScanArea
+    from . import Spectrometer
 from tkinter import Tk,filedialog
 Tk().withdraw()
 
