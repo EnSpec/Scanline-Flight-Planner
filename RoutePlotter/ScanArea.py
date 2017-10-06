@@ -528,7 +528,6 @@ class ScanRegion(object):
         self.scanAreas[-1].plot(show=True,include=['perimeter','bounds'])
 
     def toWayPoints(self,fname):
-        assert self._vehicle == 'quadcopter'
         if self._coords is None:
             self.findScanLines()
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
@@ -536,7 +535,6 @@ class ScanRegion(object):
                 self._coords,self._alt,self._bearing,speed)
 
     def toGPX(self,fname):
-        assert self._vehicle == 'fullscale'
         if self._coords is None:
             self.findScanLines()
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
@@ -544,7 +542,6 @@ class ScanRegion(object):
                 self._coords,self._alt,self.boundBox)
 
     def toShapeFile(self,fname):
-        assert self._vehicle == 'fullscale'
         if self._coords is None:
             self.findScanLines()
         speed = self._spectrometer.squareScanSpeedAt(self._alt)

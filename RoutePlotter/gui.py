@@ -119,17 +119,24 @@ class External(object):
         self._region = region
         js_callback.Call(coords,bounds,dist,speed,scanlines)
 
-    def savePath(self):
+    def savePath(self,fmt):
         if self._region is None:
             return
-        if self._vehicle == 'fullscale':
+        if fmt == 'SHP':
             fname = filedialog.askdirectory()
             if isinstance(fname,str):
                 try:
                     self._region.toShapeFile(fname)
                 except FileNotFoundError:
                     pass
-        if self._vehicle == 'quadcopter':
+        elif fmt == 'GPX':
+            fname = filedialog.asksaveasfilename()
+            if isinstance(fname,str):
+                try:
+                    self._region.toGPX(fname)
+                except FileNotFoundError:
+                    pass
+        elif fmt == 'Waypoints':
             fname = filedialog.asksaveasfilename()
             if isinstance(fname,str):
                 try:

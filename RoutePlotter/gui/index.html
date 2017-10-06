@@ -10,7 +10,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css">
     <link href="css/style.css" rel="stylesheet" type="text/css">
     <link href="css/jquery-ui.min.css" rel="stylesheet" type="text/css">
-    <title>NanoSpec Scan Route Plotter</title>
+    <title>Scan Route Plotter</title>
 </head>
 <body>
     <div id="darken">
@@ -50,7 +50,7 @@
         </div>
     </div>
     <div class="container">
-        <div class="row"><h3>Scan Route Preview</h3></div>
+        <div class="row"><h3>Scan Route Plotter</h3></div>
         <div class="row">
             <div class="col-12">
                 <div id="map"></div>
@@ -64,12 +64,17 @@
         </div>
         <div class="row">
             <div class="col-3">
-                <p><button id="infile"><u>L</u>oad Area from File</button><br>
-            <button id="start_draw"><u>D</u>raw Area</button> 
+                <p><button id="infile">Load Area from File</button><br>
+            <button id="start_draw">Draw Area</button> 
             <a id="summon_help" href='#'> (Help)</a>
             </p>
             <div id="io_panel">
-                <button id="save"><u>S</u>ave Path</button>
+                <button id="save">Save Path</button> As:
+                <select id="fmt">
+                    <option selected>GPX</option>
+                    <option>SHP</option>
+                    <option>Waypoints</option>
+                </select>
             </div>
             <div id="draw_panel" style="display:none">
                 <button id="clear_draw">Clear</button>

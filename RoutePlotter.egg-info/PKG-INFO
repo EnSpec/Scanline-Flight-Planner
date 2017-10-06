@@ -1,0 +1,14 @@
+Metadata-Version: 1.1
+Name: RoutePlotter
+Version: 1.0
+Summary: Scanning spectrometer flight-route calculator with gui
+Home-page: UNKNOWN
+Author: Matthew Westphall
+Author-email: w.matthew.he@gmail.com
+License: UNKNOWN
+Description-Content-Type: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Requires: cefpython3
+Requires: lxml
+Requires: numpy

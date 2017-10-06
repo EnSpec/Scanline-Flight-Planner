@@ -426,7 +426,7 @@ $(document).ready(function(){
         generatePath();
     });
     $('#save').click(function(){
-        external.savePath();
+        external.savePath($('#fmt').val());
     });
 
     $('#summon_help').click(function(){

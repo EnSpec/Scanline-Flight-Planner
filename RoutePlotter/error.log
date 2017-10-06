@@ -1,0 +1,22 @@
+
+[2017-10-06 14:11:47] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 134, in savePath
+    filetypes=("GPX files","*.gpx"))
+  File "/home/mwestphall/anaconda3/envs/as_test/lib/python3.6/tkinter/filedialog.py", line 380, in asksaveasfilename
+    return SaveAs(**options).show()
+  File "/home/mwestphall/anaconda3/envs/as_test/lib/python3.6/tkinter/commondialog.py", line 43, in show
+    s = w.tk.call(self.command, *w._options(self.options))
+_tkinter.TclError: bad file type "*.gpx", should be "typeName {extension ?extensions ...?} ?{macType ?macTypes ...?}?"
+
+
+[2017-10-06 14:12:40] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 134, in savePath
+    filetypes=(("GPX files","*.gpx")),)
+  File "/home/mwestphall/anaconda3/envs/as_test/lib/python3.6/tkinter/filedialog.py", line 380, in asksaveasfilename
+    return SaveAs(**options).show()
+  File "/home/mwestphall/anaconda3/envs/as_test/lib/python3.6/tkinter/commondialog.py", line 43, in show
+    s = w.tk.call(self.command, *w._options(self.options))
+_tkinter.TclError: bad file type "*.gpx", should be "typeName {extension ?extensions ...?} ?{macType ?macTypes ...?}?"
+

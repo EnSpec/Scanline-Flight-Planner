@@ -8,11 +8,13 @@ setup(name='RoutePlotter',
       author='Matthew Westphall',
       author_email='w.matthew.he@gmail.com',
       packages=['RoutePlotter'],
-      requires=[
+      package_data={'': ['**/**/*.js','**/**/*.html','**/**/*.css','**/**/*.png']},
+      scripts=['scan_route_plotter'],
+      install_requires=[
+        'shapely',
+        'pyshp',
         'cefpython3',
         'lxml',
         'numpy'
       ],
-      package_data={'': ['**/**/*.js','**/**/*.html','**/**/*.css','**/**/*.png']},
-      scripts=['scan_route_plotter']
      )
