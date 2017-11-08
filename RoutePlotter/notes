@@ -1,0 +1,33 @@
+PushBroomRoutePlanner
+make area deletion more apparent
+hyspex model: 17 or 34? -> we need both 17 and 34
+Read spectrometer options from csv?
+Waypoint names: should be named:
+    Give user option to prefix them.
+    "T NAME ALTITUDE end1" - for one end
+    "NAME start"
+    "NAME stop" 
+    "T NAME end2" - give user options for config
+    T for trail
+    Route name based on NAME
+    GUI field for NAME/site
+    Altitude in ft (agl) (and asl)
+
+Input validation
+
+One trail/route per polygon
+make multicolored icons work correctly
+Name each polygon
+export polygons, export swaths
+Help for file formats
+"Garmin GPX, ESRI SHP, APM Waypoints"
+Help for overshoots, etc
+    Defaults:
+        Overshoot: 3 miles
+            Miles for airplanes, ft for quadcopters
+        Show velocity in knots
+
+
+Restore whole state from file
+
+Cache - Display

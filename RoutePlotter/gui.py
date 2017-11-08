@@ -157,7 +157,7 @@ def main():
     window_info = cef.WindowInfo()
     window_info.SetAsChild(0, [0,0,1280,720])
     browser = cef.CreateBrowserSync(
-            window_title="NanoSpec Scan Route Preview", 
+            window_title="PushBroom Planner",
             url=url, window_info=window_info)
     frame = browser.GetMainFrame()
     #set up the browser's javascript bindings

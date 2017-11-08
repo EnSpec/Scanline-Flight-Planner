@@ -1,10 +1,89 @@
 body{
-    background-color: lightgray;
+    background-color: silver;
+    font-family:"Lucida Sans Unicode", "Lucida Grande", sans-serif;
+}
+h4{
+    margin-top:5px;
+    margin-bottom:5px;
+    padding:2px;
+    background:silver;
+    border-radius:2px;
+}
+html * {
 }
 
 #map{
-    height:500px;
     width:100%;
+    height:96%;
+}
+#menubar{
+    position:absolute;
+    left:0%;
+    top:0%;
+    padding-top:5px;
+    padding-bottom:5px;
+    padding-left:1%;
+    width:99%;
+    height:1em;
+    background:dimgray;
+    color:white;
+    font-size:14px;
+}
+#map-panel{
+    background:lightgray;
+    position:absolute;
+    left:12em;
+    right:12em;
+    top:6%;
+    bottom:2%;
+    padding:5px;
+}
+
+#draw-panel{
+    background:lightgray;
+    position:absolute;
+    left:0%;
+    top:75%;
+    bottom:0%;
+    width:10em;
+    padding:5px;
+    overflow:scroll;
+    resize:horizontal;
+    white-space:nowrap;
+}
+#poly-list-panel{
+    background:lightgray;
+    position:absolute;
+    right:0%;
+    top:1.6em;
+    bottom:0%;
+    width:10em;
+    padding:5px;
+    overflow:scroll;
+    resize:horizontal;
+    white-space:nowrap;
+    direction:rtl;
+}
+#poly-list-panel>.content{
+    direction:ltr;
+    width:100%;
+    height:100%;
+}
+#control-panel{
+    background:lightgray;
+    position:absolute;
+    left:0%;
+    top:1.6em;
+    bottom:25%;
+    width:10em;
+    padding:5px;
+    overflow:scroll;
+    resize:horizontal;
+    white-space:nowrap;
+}
+::-webkit-resizer {
+    height:100%;
+    z-index:20000;
 }
 
 #darken{
