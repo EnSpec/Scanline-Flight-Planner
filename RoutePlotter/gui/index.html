@@ -55,12 +55,6 @@
     </div>
     <div id="map-panel">
         <div id="map"></div>
-        <div class="row"style="margin-bottom:20px">
-            <div class="col-12">
-                <input id="pac-input" style="width:40%"class="controls" type="text" placeholder="Search Locations">
-            </div>
-
-        </div>
     </div>
     <div id="poly-list-panel">
         <div class="content">
@@ -101,7 +95,10 @@
                     <option value="fullscale">Full-Scale Airplane</option>
                 </select>
             <br></span>
-            <br></span>
+            <span>
+                Location:<br>
+                <input id="pac-input" style="width:100%"class="controls" type="text" placeholder="Search Locations">
+            </span>
             <h4>Scan Parameters</h4>
             <table><tbody>
               <tr>
@@ -127,20 +124,22 @@
             <h4>Flight Stats</h4>
             <table><tbody>
             <tr>
-                Distance: <span id="scan_len">0</span> mi (<span id="scan_len_km">0</span> km)
+                <td>Distance(mi):</td>
+                <td><span id="scan_len">0</span>(<span id="scan_len_km">0</span> km)</td>
             </tr>
             <tr>
-                Velocity: <span id="scan_speed">0</span> mph (<span id="scan_speed_ms">0</span> m/s)
+                <td>Velocity(kts):</td>
+                <td> <span id="scan_speed">0</span></td>
+                <!--span id="scan_speed_ms">0</span> m/s)-->
             </tr>
             <tr>
-                Duration: <span id="scan_time">0:00:00</span>
-            </tr>
-            <tr>
-                Pixel Size: 
-                <input type="text" style="width:3em" id="px_size" value=0> 
-                m
+                <td>Pixel Size(ft): </td>
+                <td><input type="text" style="width:3em" id="px_size" value=0><td>
             </tr>
             </table></tbody>
+            <span style="padding-left:2px">
+            Duration: <span id="scan_time">0:00:00</span>
+            </span>
     </div>
     <script type="text/javascript" src="js/map.js"></script>
     <script async defer
