@@ -9,12 +9,46 @@ h4{
     background:silver;
     border-radius:2px;
 }
-html * {
+
+
+.mbar-drop{
+    position:absolute;
+    display:None;
 }
 
+.mbar-drop p{
+    margin:5px;
+    
+}
+
+.mbar-drop a{
+    margin:5px;
+    color:white;
+    text-decoration:none;
+    
+}
+.mbar-drop-showing{
+    display:inline-block;
+    padding-left:10px;
+    padding-right:5px;
+    padding-bottom:5px;
+    top:1.5em;
+    z-index:999;
+}
+.mbar-item{
+    padding-left:1em;
+    color:white;
+    text-decoration:none;
+}
 #map{
     width:100%;
     height:100%;
+}
+
+.menu{
+    background:dimgray;
+    color:white;
+    font-size:14px;
 }
 #menubar{
     position:absolute;
@@ -25,9 +59,6 @@ html * {
     padding-left:1%;
     width:99%;
     height:1em;
-    background:dimgray;
-    color:white;
-    font-size:14px;
 }
 #map-panel{
     background:lightgray;

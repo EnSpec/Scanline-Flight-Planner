@@ -47,11 +47,31 @@
             </div>
         </div>
     </div>
-    <div id="menubar">
-        <span style="padding-right:1em">File</span>
-        <span style="padding-right:1em">Edit</span>
-        <span style="padding-right:1em">View</span>
-        <span style="padding-right:1em">Help</span>
+    <div class="menu" id="menubar">
+        <a href='#' id="file-mbar" class='mbar-item'>File</a>
+        <a href='#' id="edit-mbar" class='mbar-item'>Edit</a>
+        <a href='#' id="view-mbar" class='mbar-item'>View</a>
+        <a href='#' id="help-mbar" class='mbar-item'>Help</a>
+    </div>
+    <div class="menu mbar-drop" id="file-mbar-drop" >
+        <p><a href='#'>Open Plan</a></p>
+        <p><a href='#'>Save Plan As...</a></p>
+    </div>
+    <div class="menu mbar-drop" id="edit-mbar-drop" >
+        <p><a href='#'>Change Display Units</a></p>
+        <p><a href='#'>Add Scan Areas</a></p>
+        <p><a href='#'>Remove Scan Areas</a></p>
+    </div>
+    <div class="menu mbar-drop" id="view-mbar-drop">
+        <p><a href='#'>Zoom In</a></p>
+        <p><a href='#'>Zoom Out</a></p>
+        <p><a href='#'>Zoom Over Location...</a></p>
+    </div>
+    <div class="menu mbar-drop" id="help-mbar-drop">
+        <p><a href='#'>Configuration Help</a></p>
+        <p><a href='#'>Scan Parameters Help</a></p>
+        <p><a href='#'>Drawing Tools Help</a></p>
+        <p><a href='#'>Scan Area Help</a></p>
     </div>
     <div id="map-panel">
         <div id="map"></div>
@@ -90,7 +110,7 @@
             <br></span>
             <span>
                 Vehicle:<br>
-                <select id="vehicle">
+                <select id="vehicle"style="width:100%">
                     <option selected value="quadcopter">Quadcopter</option>
                     <option value="fullscale">Full-Scale Airplane</option>
                 </select>
@@ -98,12 +118,19 @@
             <span>
                 Location:<br>
                 <input id="pac-input" style="width:100%"class="controls" type="text" placeholder="Search Locations">
+            <br></span>
+            <span>
+                Units:<br>
+                <form>
+                    <input type="radio" name="units" checked>US
+                    <input type="radio" name="units">Metric
+                </form>
             </span>
             <h4>Scan Parameters</h4>
             <table><tbody>
               <tr>
                   <td>Altitude (ft):</td>
-                  <td><input type="text" style="width:3em" id="alt"value=1000> ft (<span id="alt_m">0</span> m)</td>
+                  <td><input type="text" style="width:3em" id="alt"value=1000><span hidden id="alt_m"></span></td>
               </tr>
             <tr>
                 <td>Bearing (&deg;):</td>
@@ -111,26 +138,27 @@
             </tr>
             <tr>
                 <td>Overshoot: <br>(ft)</td>
-                <td><input type="text" style="width:3em" id="overshoot"value=100> ft (<span id="overshoot_m">0</span> m)</td>
+                <td><input type="text" style="width:3em" id="overshoot"value=100><span hidden id="overshoot_m"></span></td>
             </tr>
             <tr>
                 <td>Frame (ms):</td>
-                <td><input type="text" style="width:3em" id="frame_pd"value=2> ms</td>
+                <td><input type="text" style="width:3em" id="frame_pd"value=2></td>
             </tr>
             <tr>
-                <td>Sidelap (%):</td><td><input type="text" style="width:3em" id="sidelap"value=20>%</td>
+                <td>Sidelap (%):</td><td><input type="text" style="width:3em" id="sidelap"value=20></td>
             </tr> 
             </tbody></table>
             <h4>Flight Stats</h4>
             <table><tbody>
             <tr>
                 <td>Distance(mi):</td>
-                <td><span id="scan_len">0</span>(<span id="scan_len_km">0</span> km)</td>
+                <td><span id="scan_len">0</span><span hidden id="scan_len_km"></span></td>
             </tr>
             <tr>
                 <td>Velocity(kts):</td>
-                <td> <span id="scan_speed">0</span></td>
-                <!--span id="scan_speed_ms">0</span> m/s)-->
+                <td> <span id="scan_speed">0</span>
+                    <span hidden id="scan_speed_ms">0</span></td>
+                
             </tr>
             <tr>
                 <td>Pixel Size(ft): </td>
@@ -142,6 +170,7 @@
             </span>
     </div>
     <script type="text/javascript" src="js/map.js"></script>
+    <script type="text/javascript" src="js/ui.js"></script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?libraries=places,drawing&callback=initMap">
     </script>
