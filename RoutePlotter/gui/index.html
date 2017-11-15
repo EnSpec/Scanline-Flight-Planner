@@ -78,7 +78,10 @@
     </div>
     <div id="poly-list-panel">
         <div class="content">
-            <h4>Scan Areas</h4>
+            <h4>Scan Paths</h4>
+            <ul id="drawn-paths">
+
+            </ul>
         </div>
     </div>
     <div id="draw-panel">
@@ -89,9 +92,9 @@
         </span>
         <h4>Save Path</h4>
         <span>Format: <select id="fmt">
-            <option selected>GPX</option>
-            <option>SHP</option>
-            <option>Waypoints</option>
+            <option selected>GPX(Garmin)</option>
+            <option>SHP (ESRI)</option>
+            <option>Waypoints (APM)</option>
         </select><br></span>
         <button id="save">Save Path</button>
     </div>
@@ -122,8 +125,8 @@
             <span>
                 Units:<br>
                 <form>
-                    <input type="radio" name="units" checked>US
-                    <input type="radio" name="units">Metric
+                    <label><input type="radio" name="units" checked>US</label>
+                    <label><input type="radio" name="units">Metric</label>
                 </form>
             </span>
             <h4>Scan Parameters</h4>
@@ -169,8 +172,8 @@
             Duration: <span id="scan_time">0:00:00</span>
             </span>
     </div>
-    <script type="text/javascript" src="js/map.js"></script>
     <script type="text/javascript" src="js/ui.js"></script>
+    <script type="text/javascript" src="js/map.js"></script>
     <script async defer
     src="https://maps.googleapis.com/maps/api/js?libraries=places,drawing&callback=initMap">
     </script>

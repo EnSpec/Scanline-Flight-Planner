@@ -112,11 +112,20 @@ h4{
     resize:horizontal;
     white-space:nowrap;
 }
-::-webkit-resizer {
-    height:100%;
-    z-index:20000;
+#drawn-paths{
+    list-style:None;
+    padding-left:0.25em;
+    padding-right:0.5em;
+}
+.highlighted{
+   box-shadow: 0 0 1em lightgray;
 }
 
+.route-name-in{
+    width:100%;
+    font-family:monospace;
+    margin-bottom:0.25em;
+}
 #darken{
     position: absolute;
     left:0%;

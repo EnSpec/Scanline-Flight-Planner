@@ -101,6 +101,7 @@ var userDrawnRegion = {
 
     addVertex: function(latLng){
     },
+
     closeVertices: function(event){
         //add the newly drawn poly to our list so that we can pass it to
         //gui.py once the user's done drawing
@@ -111,15 +112,50 @@ var userDrawnRegion = {
             return;
         }
         var self = this;
+
+        var my_label = addRouteLi();
+        my_label.mouseenter(function(){ self.highlight(newPoly); });
+        my_label.mouseleave(function(){ self.unhighlight(newPoly); });
+        newPoly.name_label = my_label;
+        my_label.focus();
+        my_label.select();
+        
         newPoly.addListener('rightclick',function(event){
             if(!inDrawMode) return;
             //right click the area to delete it
+            newPoly.name_label.parent().remove();
             newPoly.setMap(null);
             self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
             if(self.drawnAreas.length==0) external.setHome(null);
         });
+        newPoly.addListener('mouseover',function(event){
+            self.highlight(newPoly);
+        });
+        newPoly.addListener('mouseout',function(event){
+            self.unhighlight(newPoly); 
+        });
+
         this.drawingManager.setOptions({drawingMode:null});
         this.drawnAreas.push(newPoly);
+    
+    },
+
+    highlight:function(area){
+        area.name_label.addClass('highlighted');
+        area.setOptions({
+            strokeColor:'#0000aa',
+            strokeWeight:4,
+            fillColor: '#0000aa',
+        });
+    },
+    
+    unhighlight:function(area){
+        area.name_label.removeClass('highlighted');
+        area.setOptions({
+            strokeColor:'#0000ff',
+            strokeWeight:2,
+            fillColor: '#0000ff',
+        });
     },
     getCoords: function(){
         var self = this;
@@ -135,7 +171,11 @@ var userDrawnRegion = {
 
         return coords;
     },
-
+    getNames: function(){
+        return _.map(this.drawnAreas,function(area){
+            return area.name_label.val();
+        });
+    },
     clearDrawing:function(){
         var self = this;
         _.each(self.vertexMarkers,(m)=>m.setMap(null));
@@ -329,6 +369,7 @@ var generatePath = function(){
     if(!($('#alt').val()&&$('#bearing').val())) return;
     if(!loadFromDrawing && $('#infile').html() == noFileLoadedText) return;
     var coords = (loadFromDrawing)?userDrawnRegion.getCoords():false;
+    if(coords) external.setNames(userDrawnRegion.getNames());
     external.createPath(coords,function(coords,bounds,dist,speed,scanlines){
         coords = _.map(coords,(c)=>cleanPyCoords(c));
         bounds = _.map(bounds,(c)=>cleanPyCoords(c));

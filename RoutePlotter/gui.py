@@ -1,3 +1,4 @@
+#TODO: Use PyQt5 instead
 from cefpython3 import cefpython as cef
 import platform
 import sys
@@ -29,6 +30,7 @@ class External(object):
         self._vehicle="quadcopter"
         self._overshoot = 30 
         self._sidelap = .2
+        self._names = []
     
     def _isfloat(self,val):
         try:
@@ -56,6 +58,10 @@ class External(object):
     def setScanPd(self,val):
         if(self._isfloat(val)):
             self._scan_pd = float(val)
+    
+    def setNames(self,val):
+        self._names=val
+        print(self._names)
 
     def setBearing(self,val):
         if(self._isfloat(val)):
@@ -96,7 +102,8 @@ class External(object):
 
     def createPath(self,coords,js_callback):
         if coords:
-            region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home)
+            region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home,
+                    names = self._names)
         elif self._fname:
             region = ScanArea.ScanRegion.fromFile(self._fname,self._home)
         else:

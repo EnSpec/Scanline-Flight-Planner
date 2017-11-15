@@ -107,7 +107,8 @@ class ScanArea(object):
     Stored internally as a list of coordinates
     """
     def __init__(self,home,perimeter,spectrometer=None,alt = None,bearing=None,
-            vehicle='quadcopter',overshoot=0,find_scanline_bounds=False):
+            vehicle='quadcopter',overshoot=0,name=None, 
+            find_scanline_bounds=False):
         self._home = home
         self._perimeter = perimeter
         self.setBearing(bearing)
@@ -115,6 +116,7 @@ class ScanArea(object):
         self._coords = []
         self._alt = alt
         self._spectrometer = spectrometer
+        self._name = name
         self._boundBox = None
         self._waypoints = []
         self._sidelap = 0
@@ -148,6 +150,10 @@ class ScanArea(object):
 
     def addWayPoint(self,waypoint):
         self._waypoints.append(waypoint)
+
+    @property
+    def name(self):
+        return self._name
 
     @property
     def boundBox(self):
@@ -550,11 +556,11 @@ class ScanRegion(object):
         
     
     @classmethod
-    def from2DLatLonArray(Cls,coords,home=None,**kwargs):
+    def from2DLatLonArray(Cls,coords,home=None,names=None,**kwargs):
         home = home or coords[0][0]
         region = Cls(home,**kwargs)
-        for perimeter in coords:
-            region.addScanArea(ScanArea(home,perimeter))
+        for perimeter,name in zip(coords,names):
+            region.addScanArea(ScanArea(home,perimeter,name = name ))
         return region
 
     @classmethod
