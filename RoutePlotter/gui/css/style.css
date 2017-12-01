@@ -10,7 +10,39 @@ h4{
     border-radius:2px;
 }
 
+.on-map-icon{
+    font-size:18px;
+    position:absolute;
+    border-radius:2px;
+    background-color:white;
+    color:rgb(102,102,102);
+    padding:3px;
+    padding-left:5px;
+    padding-right:5px;
+    left:0.75em;
+    top:0.75em;
+}
+.on-map-icon a{
+    text-decoration:none;
+    color:rgb(102,102,102);
+}
+.on-map-icon a:hover{
+    text-decoration:none;
+    color:rgb(40,40,40);
+}
 
+#on-map-draw{
+    padding-right:0.25em;
+    border-right: 1px solid #EEE;
+}
+#on-map-save{
+    padding-left:0em;
+
+}
+#save-btn{
+    left:6em;
+    top:1em;
+}
 .mbar-drop{
     position:absolute;
     display:None;

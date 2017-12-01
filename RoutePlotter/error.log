@@ -20,3 +20,102 @@ _tkinter.TclError: bad file type "*.gpx", should be "typeName {extension ?extens
     s = w.tk.call(self.command, *w._options(self.options))
 _tkinter.TclError: bad file type "*.gpx", should be "typeName {extension ?extensions ...?} ?{macType ?macTypes ...?}?"
 
+
+[2017-12-01 13:23:35] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 125, in createPath
+    dist = "%.2f"%(region.totalScanLength/1000)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 520, in totalScanLength
+    sum_dist+=llmath.distanceTo(self._coords[0],self._coords[-1])
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: list indices must be integers or slices, not str
+
+
+[2017-12-01 13:24:03] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 125, in createPath
+    dist = "%.2f"%(region.totalScanLength/1000)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 520, in totalScanLength
+    sum_dist+=llmath.distanceTo(self._coords[0],self._coords[-1])
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: list indices must be integers or slices, not str
+
+
+[2017-12-01 13:32:07] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 125, in createPath
+    dist = "%.2f"%(region.totalScanLength/1000)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 520, in totalScanLength
+    sum_dist+=llmath.distanceTo(self._coords[0],self._coords[-1])
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: list indices must be integers or slices, not str
+
+
+[2017-12-01 13:32:47] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 126, in createPath
+    dist = "%.2f"%(region.totalScanLength/1000)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 520, in totalScanLength
+    sum_dist+=llmath.distanceTo(self._coords[0],self._coords[-1])
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/LonLatMath.py", line 53, in distanceTo
+    latr0 = radians(start['lat'])
+TypeError: list indices must be integers or slices, not str
+
+
+[2017-12-01 13:40:08] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 126, in createPath
+    dist = "%.2f"%(region.totalScanLength/1000)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 519, in totalScanLength
+    sum_dist+=llmath.distanceTo(coord,self._coords[i])
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/LonLatMath.py", line 55, in distanceTo
+    latrf = radians(end['lat'])
+TypeError: list indices must be integers or slices, not str
+
+
+[2017-12-01 15:20:35] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 121, in createPath
+    region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 522, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 326, in findScanLines
+    end_edges = Edge(self._coords[1],self._coords[-2])
+IndexError: list index out of range
+
+
+[2017-12-01 15:21:36] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 121, in createPath
+    region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 522, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 326, in findScanLines
+    end_edges = Edge(self._coords[1],self._coords[-2])
+IndexError: list index out of range
+
+
+[2017-12-01 15:28:55] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 121, in createPath
+    region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 522, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 326, in findScanLines
+    end_edges = Edge(self._coords[1],self._coords[-2])
+IndexError: list index out of range
+
+
+[2017-12-01 15:29:11] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 121, in createPath
+    region.findScanLines()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 522, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 326, in findScanLines
+    end_edges = Edge(self._coords[1],self._coords[-2])
+IndexError: list index out of range
+

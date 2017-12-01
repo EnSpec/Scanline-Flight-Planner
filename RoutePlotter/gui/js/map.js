@@ -111,6 +111,8 @@ var userDrawnRegion = {
             newPoly.setMap(null);
             return;
         }
+
+        newPoly.setOptions({zIndex:1999});
         var self = this;
 
         var my_label = addRouteLi();
@@ -307,7 +309,11 @@ function initMap() {
     map = new google.maps.Map(document.getElementById('map'), {
       zoom: 3,
       center: zerozero,
-      mapTypeId: 'satellite'
+      mapTypeId: 'satellite',
+      fullScrenControl: false,
+      mapTypeControlOptions:{
+        position: google.maps.ControlPosition.TOP_RIGHT,
+      }
     });
     //code taken from 
     searchBox = new google.maps.places.SearchBox(
@@ -393,6 +399,33 @@ var generatePath = function(){
     
     });
 }
+
+var toggle_draw_mode = function(){
+    if(!inDrawMode){
+        inDrawMode = true;
+        loadFromDrawing = true;
+        $('#generate,#save,#infile').prop('disabled',true);
+        $('#pac-input').prop('disabled',false);
+        $('#start_draw').html("Finish Drawing");
+        $('#on-map-draw').html("&#10003;");
+        userDrawnRegion.enterDrawMode();
+        map.setOptions({
+             disableDoubleClickZoom: true
+        });
+    } else {
+        inDrawMode = false;
+        $('#generate,#save,#infile').prop('disabled',false);
+        $('#start_draw').html("Draw Area");
+        $('#on-map-draw').html("&#128393;");
+        userDrawnRegion.exitDrawMode();
+        if(userDrawnRegion.hasDrawnRegions())
+            generatePath();
+        map.setOptions({
+             disableDoubleClickZoom: false
+        });
+    }
+};
+
 $(document).ready(function(){
     noFileLoadedText = $('#infile').html();
     $('#infile').click(function(){
@@ -410,29 +443,8 @@ $(document).ready(function(){
         userDrawnRegion.clearDrawing();
         external.setHome(null);
     });    
-    $('#start_draw').click(function(){
-        if(!inDrawMode){
-            inDrawMode = true;
-            loadFromDrawing = true;
-            $('#generate,#save,#infile').prop('disabled',true);
-            $('#pac-input').prop('disabled',false);
-            $(this).html("Finish Drawing");
-            userDrawnRegion.enterDrawMode();
-            map.setOptions({
-                 disableDoubleClickZoom: true
-            });
-        } else {
-            inDrawMode = false;
-            $('#generate,#save,#infile').prop('disabled',false);
-            $(this).html("Draw Area");
-            userDrawnRegion.exitDrawMode();
-            if(userDrawnRegion.hasDrawnRegions())
-                generatePath();
-            map.setOptions({
-                 disableDoubleClickZoom: false
-            });
-        }
-    });
+    $('#start_draw').click(toggle_draw_mode);
+    $('#on-map-draw').click(toggle_draw_mode);
 
     $('#spectrometer').change(function(){
         external.setSpectrometer($(this).val());

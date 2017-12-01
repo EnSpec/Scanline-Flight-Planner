@@ -118,7 +118,9 @@ class External(object):
         scanner = self._spectrometer or Spectrometer.HeadwallNanoHyperspec()
         scanner.setFramePeriod(self._scan_pd)
         region.setSpectrometer(scanner)
-        coords = region.findScanLines()
+        region.findScanLines()
+        coords = region.flattenCoords()
+        print(coords)
         bounds= region.boundBox
         scanlines=region.scanLineBoundBoxes
         dist = "%.2f"%(region.totalScanLength/1000)

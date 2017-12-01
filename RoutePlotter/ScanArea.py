@@ -1,6 +1,5 @@
 import numpy as np
 import time
-from shapely import geometry
 import os
 try:
     import LonLatMath as llmath
@@ -175,9 +174,37 @@ class ScanArea(object):
         """
         #use Shapely's builtin centroid calculator
         coordlist = [(l['lat'],l['lon'])for l in self._perimeter]
-        center = geometry.Polygon(coordlist).centroid.coords
-        print(center)
-        return {'lat':center[0][0],'lon':center[0][1]}
+        #center = geometry.Polygon(coordlist).centroid.coords
+        #use formula given in 
+        #https://en.wikipedia.org/wiki/Centroid#Centroid_of_polygon
+        #find the simple center of the set of points
+        sum_x = 0
+        sum_y = 0
+        for point in coordlist:
+            sum_x+=point[0]
+            sum_y+=point[1]
+        sum_x/=len(coordlist)
+        sum_y/=len(coordlist)
+        #chop it up into triangles, find the centroid of each
+        tri_cents = []
+        for i in range(len(coordlist)):
+            c2 = (i+1)%len(coordlist)
+            x_cent = (coordlist[i][0]+coordlist[c2][0]+sum_x)/3
+            y_cent = (coordlist[i][1]+coordlist[c2][1]+sum_y)/3
+            tri_cents.append([x_cent,y_cent])
+        #find the centroid of the centroids
+        cent_x = 0
+        cent_y = 0
+        for cent in tri_cents:
+            cent_x += cent[0]
+            cent_y += cent[1]
+        cent_x/=len(tri_cents)
+        cent_y/=len(tri_cents)
+        Cx = cent_x
+        Cy = cent_y
+
+        print(Cx,Cy)
+        return {'lat':Cx,'lon':Cy}
 
     def _arrangePerimeter(self,perimeter):
         """Arrange the perimiter clockwise,then select the point nearest home
@@ -487,29 +514,38 @@ class ScanRegion(object):
             return min(Edge(*a.boundBox).distanceTo(self._home))
         self._scanareas.sort(key=_prox_to_home) 
 
+
+    def flattenCoords(self):
+        flat_coords = []
+        for coords in self._coords:
+            flat_coords+=coords
+        #and returns to home at the end
+        return flat_coords
+
     def findScanLines(self):
         """Find the scan lines of each ScanArea, then chain them together"""
-        self._coords = [self._home]
+        self._coords = []
         home = self._home
         self._reorderScanAreas()
         for sa in self.scanAreas:
             sa.setHome(home)
             new_coords = sa.findScanLines()[1:]
-            self._coords+= new_coords
-            home = self._coords[-1]
+            self._coords.append(new_coords)
+            home = self._coords[-1][-1]
         
-        if self._vehicle == 'fullscale':
-            #full-scale airplanes don't need a home to be set
-            self._coords = self._coords[1:]
+        if self._vehicle == 'quadcopter':
+            #quadcopter treats the whole thing as a single continuous route
+            self._coords = [[self._home]+self.flattenCoords()+[self._home]]
         return self._coords
 
     @property
     def totalScanLength(self):
         sum_dist=0
-        for i,coord in enumerate(self._coords[1:]):
-            sum_dist+=llmath.distanceTo(coord,self._coords[i])
+        for route in self._coords:
+            for i,coord in enumerate(route[1:]):
+                sum_dist+=llmath.distanceTo(coord,route[i])
 
-        sum_dist+=llmath.distanceTo(self._coords[0],self._coords[-1])
+        sum_dist+=llmath.distanceTo(self._coords[0][0],self._coords[-1][-1])
         return sum_dist
 
     @property
