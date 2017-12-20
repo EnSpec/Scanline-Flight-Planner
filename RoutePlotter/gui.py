@@ -120,7 +120,6 @@ class External(object):
         region.setSpectrometer(scanner)
         region.findScanLines()
         coords = region.flattenCoords()
-        print(coords)
         bounds= region.boundBox
         scanlines=region.scanLineBoundBoxes
         dist = "%.2f"%(region.totalScanLength/1000)
@@ -131,21 +130,21 @@ class External(object):
     def savePath(self,fmt):
         if self._region is None:
             return
-        if fmt == 'SHP':
+        if 'SHP' in fmt:
             fname = filedialog.askdirectory()
             if isinstance(fname,str):
                 try:
                     self._region.toShapeFile(fname)
                 except FileNotFoundError:
                     pass
-        elif fmt == 'GPX':
+        elif 'GPX' in fmt:
             fname = filedialog.asksaveasfilename()
             if isinstance(fname,str):
                 try:
                     self._region.toGPX(fname)
                 except FileNotFoundError:
                     pass
-        elif fmt == 'Waypoints':
+        elif 'Waypoints' in fmt:
             fname = filedialog.asksaveasfilename()
             if isinstance(fname,str):
                 try:
