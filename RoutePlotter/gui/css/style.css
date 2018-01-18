@@ -37,7 +37,6 @@ h4{
 }
 #on-map-save{
     padding-left:0em;
-
 }
 #save-btn{
     left:6em;
@@ -95,8 +94,8 @@ h4{
 #map-panel{
     background:lightgray;
     position:absolute;
-    left:12em;
-    right:12em;
+    left:14em;
+    right:14em;
     top:6%;
     bottom:2%;
     padding:5px;
@@ -120,7 +119,7 @@ h4{
     right:0%;
     top:1.6em;
     bottom:0%;
-    width:10em;
+    width:12em;
     padding:5px;
     overflow:scroll;
     resize:horizontal;
@@ -137,8 +136,8 @@ h4{
     position:absolute;
     left:0%;
     top:1.6em;
-    bottom:25%;
-    width:10em;
+    bottom:0%;
+    width:12em;
     padding:5px;
     overflow:scroll;
     resize:horizontal;

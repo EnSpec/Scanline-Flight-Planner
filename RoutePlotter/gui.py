@@ -27,7 +27,7 @@ class External(object):
         self._home = None
         self._region = None
         self._spectrometer = None
-        self._vehicle="quadcopter"
+        self._vehicle="fullscale"
         self._overshoot = 30 
         self._sidelap = .2
         self._names = []
@@ -117,6 +117,7 @@ class External(object):
         region.setFindScanLineBounds(True)
         scanner = self._spectrometer or Spectrometer.HeadwallNanoHyperspec()
         scanner.setFramePeriod(self._scan_pd)
+        px_size = scanner.pixelSizeAt(self._alt)
         region.setSpectrometer(scanner)
         region.findScanLines()
         coords = region.flattenCoords()
@@ -125,7 +126,7 @@ class External(object):
         dist = "%.2f"%(region.totalScanLength/1000)
         speed = "%.2f"%region.scanVelocity
         self._region = region
-        js_callback.Call(coords,bounds,dist,speed,scanlines)
+        js_callback.Call(coords,bounds,dist,speed,px_size,scanlines)
 
     def savePath(self,fmt):
         if self._region is None:

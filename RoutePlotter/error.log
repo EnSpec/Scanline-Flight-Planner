@@ -1,0 +1,31 @@
+
+[2018-01-17 17:51:10] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:98999)
+  File "gui.py", line 144, in savePath
+    self._region.toGPX(fname)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 584, in toGPX
+    self._coords(),self._alt,self.boundBox)
+TypeError: 'list' object is not callable
+
+
+[2018-01-17 17:52:15] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:98999)
+  File "gui.py", line 144, in savePath
+    self._region.toGPX(fname)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 584, in toGPX
+    self._coords,self._alt,self.boundBox)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\GPXParse.py", line 160, in waypointsFromCoords
+    .split('.')[0]+'Z' for i in range(len(coords))]
+UnboundLocalError: local variable 'coords' referenced before assignment
+
+
+[2018-01-17 17:54:07] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:98999)
+  File "gui.py", line 144, in savePath
+    self._region.toGPX(fname)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 584, in toGPX
+    self._coords,self._alt,self.boundBox)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\GPXParse.py", line 160, in waypointsFromCoords
+    .split('.')[0]+'Z' for i in range(len(coords))]
+UnboundLocalError: local variable 'coords' referenced before assignment
+

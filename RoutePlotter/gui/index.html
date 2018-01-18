@@ -81,26 +81,24 @@
         </div>
     </div>
     <div id="poly-list-panel">
-        <div class="content">
+      <div class="content">
+            <h4>Drawing Tools</h4>
+            <span><button id="infile">Load Area</button><br></span>
+            <span><button id="start_draw">Draw Area</button>
+              <a id="summon_help" href='#'> (Help)<br></a>
+            </span>
+            <h4>Save Path</h4>
+            <span>Format: <select id="fmt">
+              <option selected>GPX(Garmin)</option>
+              <option>SHP (ESRI)</option>
+              <option>Waypoints (APM)</option>
+            </select><br></span>
+            <button id="save">Save Path</button>
             <h4>Scan Paths</h4>
             <ul id="drawn-paths">
 
             </ul>
-        </div>
-    </div>
-    <div id="draw-panel">
-        <h4>Drawing Tools</h4>
-        <span><button id="infile">Load Area</button><br></span>
-        <span><button id="start_draw">Draw Area</button>
-            <a id="summon_help" href='#'> (Help)<br></a>
-        </span>
-        <h4>Save Path</h4>
-        <span>Format: <select id="fmt">
-            <option selected>GPX(Garmin)</option>
-            <option>SHP (ESRI)</option>
-            <option>Waypoints (APM)</option>
-        </select><br></span>
-        <button id="save">Save Path</button>
+      </div>
     </div>
     <div id="control-panel">
         <h4>Flight Config</h4>
@@ -118,8 +116,8 @@
             <span>
                 Vehicle:<br>
                 <select id="vehicle"style="width:100%">
-                    <option selected value="quadcopter">Quadcopter</option>
-                    <option value="fullscale">Full-Scale Airplane</option>
+                    <option value="quadcopter">Quadcopter</option>
+                    <option selected value="fullscale">Full-Scale Airplane</option>
                 </select>
             <br></span>
             <span>
@@ -135,25 +133,25 @@
             </span>
             <h4>Scan Parameters</h4>
             <table><tbody>
-              <tr>
-                  <td>Altitude (ft):</td>
-                  <td><input type="text" style="width:3em" id="alt"value=1000><span hidden id="alt_m"></span></td>
-              </tr>
+            <tr>
+                <td>Altitude (ft):</td>
+                <td><input type="text" style="width:3em" id="alt"value=3000><span hidden id="alt_m"></span></td>
+            </tr>
+            <tr>
+                <td>Approach (ft):</td>
+                <td><input type="text" style="width:3em" id="overshoot"value=5000><span hidden id="overshoot_m"></span></td>
+            </tr>
             <tr>
                 <td>Bearing (&deg;):</td>
-                <td><input type="text" style="width:3em" id="bearing"value=45></td> 
-            </tr>
-            <tr>
-                <td>Overshoot: <br>(ft)</td>
-                <td><input type="text" style="width:3em" id="overshoot"value=100><span hidden id="overshoot_m"></span></td>
-            </tr>
-            <tr>
-                <td>Frame (ms):</td>
-                <td><input type="text" style="width:3em" id="frame_pd"value=2></td>
+                <td><input type="text" style="width:3em" id="bearing"value=0></td> 
             </tr>
             <tr>
                 <td>Sidelap (%):</td><td><input type="text" style="width:3em" id="sidelap"value=20></td>
             </tr> 
+            <tr>
+                <td>Frame (ms):</td>
+                <td><input type="text" style="width:3em" id="frame_pd"value=2></td>
+            </tr>
             </tbody></table>
             <h4>Flight Stats</h4>
             <table><tbody>
@@ -169,7 +167,7 @@
             </tr>
             <tr>
                 <td>Pixel Size(ft): </td>
-                <td><input type="text" style="width:3em" id="px_size" value=0><td>
+		<td><span id="px_size">0</span><td>
             </tr>
             </table></tbody>
             <span style="padding-left:2px">

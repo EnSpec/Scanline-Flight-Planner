@@ -581,7 +581,7 @@ class ScanRegion(object):
             self.findScanLines()
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
         GPXParse.waypointsFromCoords(fname,
-                self.flattenCoords(),self._alt,self.boundBox)
+                self._coords,self._alt,self.boundBox)
 
     def toShapeFile(self,fname):
         if self._coords is None:

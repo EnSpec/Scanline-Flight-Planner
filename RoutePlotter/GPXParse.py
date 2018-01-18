@@ -119,10 +119,7 @@ def makeRoutePoint(coord,alt,time,seq_no):
     nameElem.text ="{}-{}-{}".format(alt,int(seq_no/4)+1,int(seq_no%4)+1)
 
     symElem = etree.SubElement(rteptElem,"sym")
-    if(seq_no in [1,2]):
-        symElem.text="Flag, Green"
-    else:
-        symElem.text="Flag, Blue"
+    symElem.text="Navaid, "+["Blue","Green","Green","Blue"][seq_no%4]
 
     rteptElem.append(fixedExtensions(RTEPT_EXTENSIONS,time))
 
@@ -149,7 +146,7 @@ def gpxtrx2gpxx(xml_string):
     idx=xml_string.index('gpxtrx')+1
     return''.join((xml_string[:idx],xml_string[idx:].replace('gpxtrx','gpxx')))
 
-def waypointsFromCoords(fname,coords,alt,bounds,times=None):
+def waypointsFromCoords(fname,areas,alt,bounds,times=None):
     """Take a list of coordinates and output a waypoint file that visits each
     point"""
     import sys
@@ -157,17 +154,19 @@ def waypointsFromCoords(fname,coords,alt,bounds,times=None):
             creator="Garmin Desktop App", version="1.1")
     #make up some fake timestamps
     times = times or [(datetime.now()+timedelta(seconds=5*i)).isoformat()
-            .split('.')[0]+'Z' for i in range(len(coords))]
+            .split('.')[0]+'Z' for i in range(sum([len(c)for c in areas]))]
 
     root.append(metadata(bounds,times[0]))
 
-    route = makeRoute(alt,[0,len(coords)])
+    for coords in areas:
+        route = makeRoute(alt,[0,len(coords)])
 
-    for i,coord in enumerate(coords):
-        root.append(makeWayPoint(coord,alt,times[i],i))
-        route.append(makeRoutePoint(coord,alt,times[i],i))
+        for i,coord in enumerate(coords):
+            #root.append(makeWayPoint(coord,alt,times[i],i))
+            route.append(makeRoutePoint(coord,alt,times[i],i))
 
-    root.append(route)
+        root.append(route)
+
     with open(fname,"w") as f:
         f.write('<?xml version="1.0" encoding="utf-8"?>')
         f.write(gpxtrx2gpxx(etree.tostring(root,pretty_print=True)

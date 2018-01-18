@@ -28,8 +28,16 @@ var km2mi = function(km){
     return Number(km)*0.621371
 }
 
+var m2ft = function(m){
+    return Number(m)*3.28084
+}
+
 var ms2mph = function(ms){
     return Number(ms)*2.23694
+}
+
+var ms2kts = function(ms){
+    return Number(ms)*1.94384
 }
 
 vertex_url='http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png';
@@ -363,7 +371,7 @@ function initMap() {
 };
 
 var setScanSpeed=function(speed){
-    $('#scan_speed').html(Math.round(ms2mph(speed)));
+    $('#scan_speed').html(Math.round(ms2kts(speed)));
     $('#scan_speed_ms').html(Math.round(speed));
     var seconds = Math.floor(1000*Number($('#scan_len').html())/Number(speed));
     var date = new Date(null);
@@ -376,10 +384,11 @@ var generatePath = function(){
     if(!loadFromDrawing && $('#infile').html() == noFileLoadedText) return;
     var coords = (loadFromDrawing)?userDrawnRegion.getCoords():false;
     if(coords) external.setNames(userDrawnRegion.getNames());
-    external.createPath(coords,function(coords,bounds,dist,speed,scanlines){
+    external.createPath(coords,function(coords,bounds,dist,speed,pxsize,scanlines){
         coords = _.map(coords,(c)=>cleanPyCoords(c));
         bounds = _.map(bounds,(c)=>cleanPyCoords(c));
         $('#scan_len').html(Math.round(km2mi(dist)));
+        $('#px_size').html(m2ft(pxsize).toFixed(2));
         $('#scan_len_km').html(Math.round(dist));
         setScanSpeed(speed);
 
@@ -478,7 +487,7 @@ $(document).ready(function(){
         external.setSidelap($(this).val());
         generatePath();
     });
-    $('#save').click(function(){
+    $('#save,#on-map-save').click(function(){
         external.savePath($('#fmt').val());
     });
 
