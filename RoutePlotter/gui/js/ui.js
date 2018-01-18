@@ -15,7 +15,7 @@ var addRouteLi = function(id){
 
 
 $(document).ready(function(){
-    $('#draw-panel').resizable({
+    /*$('#draw-panel').resizable({
         handles: 'e',
         alsoResize:'#control-panel'
     });
@@ -28,7 +28,7 @@ $(document).ready(function(){
     });
     $('#map-panel').resizable({
         handles:'e, w, n, s'
-    });
+    });*/
     $('.mbar-item').click(function(){
 
         var my_dropdown = $('#'+$(this).attr('id')+'-drop');

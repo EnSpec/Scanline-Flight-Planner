@@ -83,17 +83,23 @@
     <div id="poly-list-panel">
       <div class="content">
             <h4>Drawing Tools</h4>
-            <span><button id="infile">Load Area</button><br></span>
-            <span><button id="start_draw">Draw Area</button>
+            <span><button id="start_draw"style="width:6em">Draw Area</button>
               <a id="summon_help" href='#'> (Help)<br></a>
             </span>
             <h4>Save Path</h4>
-            <span>Format: <select id="fmt">
-              <option selected>GPX(Garmin)</option>
-              <option>SHP (ESRI)</option>
-              <option>Waypoints (APM)</option>
-            </select><br></span>
-            <button id="save">Save Path</button>
+	    <span>
+              <button id="save_native"class="text-center" style="width:6em">Save</button>
+              <button id="load"class="text-center" style="width:6em">Load</button>
+	    </span>
+	    <span><br>Export As:<br>
+              <select id="fmt"style="width:100%">
+                <option selected>GPX(Garmin)</option>
+                <option>SHP (ESRI)</option>
+                <option>Waypoints (APM)</option>
+              </select>
+	      <br>
+	    </span>
+            <button id="save"class="text-center" style="width:6em">Export</button>
             <h4>Scan Paths</h4>
             <ul id="drawn-paths">
 
@@ -127,23 +133,23 @@
             <span>
                 Units:<br>
                 <form>
-                    <label><input type="radio" name="units" checked>US</label>
-                    <label><input type="radio" name="units">Metric</label>
+                    <label><input id="us" type="radio" name="units" checked>US</label>
+                    <label><input id="metric" type="radio" name="units">Metric</label>
                 </form>
             </span>
             <h4>Scan Parameters</h4>
             <table><tbody>
             <tr>
-                <td>Altitude (ft):</td>
-                <td><input type="text" style="width:3em" id="alt"value=3000><span hidden id="alt_m"></span></td>
+                <td id="alt_label">Altitude (ft):</td>
+                <td><input type="text" style="width:3em" id="alt"value=3000></span></td>
             </tr>
             <tr>
-                <td>Approach (ft):</td>
-                <td><input type="text" style="width:3em" id="overshoot"value=5000><span hidden id="overshoot_m"></span></td>
+                <td id="appr_label">Approach (mi):</td>
+                <td><input type="text" style="width:3em" id="overshoot"value=1></span></td>
             </tr>
             <tr>
                 <td>Bearing (&deg;):</td>
-                <td><input type="text" style="width:3em" id="bearing"value=0></td> 
+                <td><input type="text" style="width:3em" id="bearing"value=45></td> 
             </tr>
             <tr>
                 <td>Sidelap (%):</td><td><input type="text" style="width:3em" id="sidelap"value=20></td>
@@ -156,17 +162,17 @@
             <h4>Flight Stats</h4>
             <table><tbody>
             <tr>
-                <td>Distance(mi):</td>
+                <td id="dist_label">Distance (mi):</td>
                 <td><span id="scan_len">0</span><span hidden id="scan_len_km"></span></td>
             </tr>
             <tr>
-                <td>Velocity(kts):</td>
+                <td id="speed_label">Velocity (kts):</td>
                 <td> <span id="scan_speed">0</span>
                     <span hidden id="scan_speed_ms">0</span></td>
                 
             </tr>
             <tr>
-                <td>Pixel Size(ft): </td>
+                <td id="px_label">Pixel Size (ft): </td>
 		<td><span id="px_size">0</span><td>
             </tr>
             </table></tbody>

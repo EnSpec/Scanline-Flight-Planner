@@ -3,6 +3,7 @@ var map;
 var searchBox;
 var inDrawMode = false;
 var loadFromDrawing = true;
+var UNITS = "US";
 var noFileLoadedText;
 var cleanPyCoords = function(c){
     //CEF sometimes converts coords to strings, make sure they're numbers
@@ -20,25 +21,15 @@ var toPyCoords = function(latLng){
 
 
 
-var f2m = function(feet){
-    return Number(feet)*0.3048
-}
 
-var km2mi = function(km){
-    return Number(km)*0.621371
-}
+var km2mi = function(km){ return Number(km)*0.621371 }
+var mi2km = function(mi){ return Number(mi)/0.621371 }
 
-var m2ft = function(m){
-    return Number(m)*3.28084
-}
+var m2ft = function(m){ return Number(m)*3.28084 }
+var ft2m = function(feet){ return Number(feet)/3.28084 }
 
-var ms2mph = function(ms){
-    return Number(ms)*2.23694
-}
-
-var ms2kts = function(ms){
-    return Number(ms)*1.94384
-}
+var ms2kts = function(ms){ return Number(ms)*1.94384 }
+var kts2ms = function(kts){ return Number(kts)/1.94384 }
 
 vertex_url='http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png';
 plus_url='http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png';
@@ -106,14 +97,25 @@ var userDrawnRegion = {
         });
 
     },
-
-    addVertex: function(latLng){
+    addPolyFromCoords: function(coords){
+        var newPoly = new google.maps.Polygon({
+	    paths:coords,
+            strokeColor:'#0000ff',
+            strokeOpacity:0.8,
+            strokeWeight:2,
+            fillColor: '#0000ff',
+            fillOpacity: 0.35,
+            draggable: true,
+            editable:true
+	});
+	closeVertices(undefined,newPoly);
     },
 
-    closeVertices: function(event){
+    closeVertices: function(event,newPoly){
         //add the newly drawn poly to our list so that we can pass it to
         //gui.py once the user's done drawing
-        var newPoly = event.overlay;
+	if(newPoly === undefined)
+            newPoly = event.overlay;
         //sometimes a poly doesn't get completed, in that case delete it
         if(newPoly.getPath().getLength() < 3){
             newPoly.setMap(null);
@@ -371,8 +373,10 @@ function initMap() {
 };
 
 var setScanSpeed=function(speed){
-    $('#scan_speed').html(Math.round(ms2kts(speed)));
-    $('#scan_speed_ms').html(Math.round(speed));
+    if(UNITS=="US")
+        $('#scan_speed').html(Math.round(ms2kts(speed)));
+    else
+        $('#scan_speed').html(Math.round(speed));
     var seconds = Math.floor(1000*Number($('#scan_len').html())/Number(speed));
     var date = new Date(null);
     date.setSeconds(seconds);
@@ -387,11 +391,14 @@ var generatePath = function(){
     external.createPath(coords,function(coords,bounds,dist,speed,pxsize,scanlines){
         coords = _.map(coords,(c)=>cleanPyCoords(c));
         bounds = _.map(bounds,(c)=>cleanPyCoords(c));
-        $('#scan_len').html(Math.round(km2mi(dist)));
-        $('#px_size').html(m2ft(pxsize).toFixed(2));
-        $('#scan_len_km').html(Math.round(dist));
+	if(UNITS=='US'){
+      	    $('#scan_len').html(Math.round(km2mi(dist)));
+	    $('#px_size').html(m2ft(pxsize).toFixed(2));
+	}else{
+      	    $('#scan_len').html(Math.round(dist));
+	    $('#px_size').html(Number(pxsize).toFixed(2));
+	}
         setScanSpeed(speed);
-
         if($('#vehicle').val()=='fullscale')
             setAirplaneScanPath(coords,scanlines);
         else
@@ -460,12 +467,13 @@ $(document).ready(function(){
         generatePath();
     });
     $('#alt').change(function(){
-        external.setAlt(f2m($(this).val()));
-        $('#alt_m').html(Math.floor(f2m($(this).val())));
+	if(UNITS=='US')
+            external.setAlt(ft2m($(this).val()));
+	else
+            external.setAlt($(this).val());
         generatePath();
     });
     $('#bearing').change(function(){
-        console.log("Bearing!");
         external.setBearing($(this).val());
         generatePath();
     });
@@ -479,8 +487,10 @@ $(document).ready(function(){
         generatePath();
     });
     $('#overshoot').change(function(){
-        external.setOvershoot(f2m($(this).val()));
-        $('#overshoot_m').html(Math.floor(f2m($(this).val())));
+	if(UNITS=='US')
+            external.setOvershoot(5280*ft2m($(this).val()));
+	else
+            external.setOvershoot(1000*$(this).val());
         generatePath();
     });
     $('#sidelap').change(function(){
@@ -489,6 +499,9 @@ $(document).ready(function(){
     });
     $('#save,#on-map-save').click(function(){
         external.savePath($('#fmt').val());
+    });
+    $('#save_native').click(function(){
+        external.savePath('Project');
     });
 
     $('#summon_help').click(function(){
@@ -501,6 +514,36 @@ $(document).ready(function(){
     $('#darken').click(function(){
         $(this).hide();
         $(window).unbind('resize');
+    });
+
+
+    $('#us').click(function(){
+	if(UNITS=="US")return;
+        $('#alt_label').html('Altitude (ft):');
+        $('#appr_label').html('Approach (mi):');
+        $('#dist_label').html('Distance (km):');
+        $('#speed_label').html('Velocity (kts):');
+        $('#px_label').html('Pixel Size (ft):');
+
+	$('#alt').val(Math.round(m2ft($('#alt').val())));
+	$('#overshoot').val(km2mi($('#overshoot').val()).toFixed(2));
+
+	UNITS = 'US';
+        generatePath();
+    });
+    $('#metric').click(function(){
+	if(UNITS=="metric")return;
+        $('#alt_label').html('Altitude (m):');
+        $('#appr_label').html('Approach (km):');
+        $('#dist_label').html('Distance (km):');
+        $('#speed_label').html('Velocity (m/s):');
+        $('#px_label').html('Pixel Size (m):');
+
+	$('#alt').val(Math.round(ft2m($('#alt').val())));
+	$('#overshoot').val(mi2km($('#overshoot').val()).toFixed(2));
+	    
+	UNITS = 'metric';
+        generatePath();
     });
     $('#overshoot, #alt').change();
 });

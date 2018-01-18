@@ -5,6 +5,7 @@ import sys
 import os
 import glob
 import time
+from multiprocessing import Process
 try:
     import ScanArea
     import Spectrometer
@@ -14,6 +15,41 @@ except ImportError:
     from . import Spectrometer
 from tkinter import Tk,filedialog
 Tk().withdraw()
+
+def TkSaveSubProc(region,fmt):
+    if region is None:
+        return
+    if 'SHP' in fmt:
+        fname = filedialog.askdirectory()
+        if isinstance(fname,str):
+            try:
+                region.toShapeFile(fname)
+            except FileNotFoundError:
+                pass
+    elif 'GPX' in fmt:
+        fname = filedialog.asksaveasfilename(defaultextension=".gpx",
+                filetypes=[("Garmin GPX",".gpx")])
+        if isinstance(fname,str):
+            try:
+                region.toGPX(fname)
+            except FileNotFoundError:
+                pass
+    elif 'Waypoints' in fmt:
+        fname = filedialog.asksaveasfilename(defaultextension=".txt",
+                filetypes=[("APM Waypoints file",".txt")])
+        if isinstance(fname,str):
+            try:
+                region.toWayPoints(fname)
+            except FileNotFoundError:
+                pass
+    elif 'Project' in fmt:
+        fname = filedialog.asksaveasfilename(defaultextension=".shp",
+                filetypes=[("Project Shapefile",".shp")])
+        if isinstance(fname,str):
+            try:
+                region.toProjectShapeFile(fname,'US')
+            except FileNotFoundError:
+                pass
 
 
 class External(object):
@@ -31,6 +67,7 @@ class External(object):
         self._overshoot = 30 
         self._sidelap = .2
         self._names = []
+        self.p = None
     
     def _isfloat(self,val):
         try:
@@ -131,28 +168,10 @@ class External(object):
     def savePath(self,fmt):
         if self._region is None:
             return
-        if 'SHP' in fmt:
-            fname = filedialog.askdirectory()
-            if isinstance(fname,str):
-                try:
-                    self._region.toShapeFile(fname)
-                except FileNotFoundError:
-                    pass
-        elif 'GPX' in fmt:
-            fname = filedialog.asksaveasfilename()
-            if isinstance(fname,str):
-                try:
-                    self._region.toGPX(fname)
-                except FileNotFoundError:
-                    pass
-        elif 'Waypoints' in fmt:
-            fname = filedialog.asksaveasfilename()
-            if isinstance(fname,str):
-                try:
-                    self._region.toWayPoints(fname)
-                except FileNotFoundError:
-                    pass
-
+        if(self.p):
+            self.p.join()
+        self.p = Process(target=TkSaveSubProc,args=(self._region,fmt))
+        self.p.start()
 
 def main():
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -177,6 +196,8 @@ def main():
     #enter main loop
     cef.MessageLoop()
     cef.Shutdown()
+    if(external.p):
+        external.p.join()
 
 
 def check_versions():

@@ -27,10 +27,48 @@ def findRegionType(shpfile,types_to_check=("Polygon","Point")):
                 return t
     return None
 
+def findMeta(shpfile):
+    shpf = shapefile.Reader(shpfile)
+    fields = shpf.fields
+    records = shpf.records()
+    out = {key:[]for key in fields}
+    print(records)
+
 def coordDictListToCoord2DList(coord_dict_list,alt=0):
     coords = list(map(lambda c:[c['lon'],c['lat'],alt],coord_dict_list))
     nested_coords = [[p1,p2]for p1,p2 in zip(coords[::2],coords[1::2])]
     return [coords]
+
+
+def planOutlineFromCoords(fname,regions,alt,approach,bearing,sidelap,
+        inst,names,vehic='fullscale',units='US'):
+    polyw = shapefile.Writer(shapefile.POLYGON)
+    polyw.field('name','C',40)
+    polyw.field('alt','F',12)
+    polyw.field('approach','F',12)
+    polyw.field('bearing','F',12)
+    polyw.field('sidelap','F',12)
+    polyw.field('inst','C',40)
+    polyw.field('frame','F',12)
+    polyw.field('fov','F',10)
+    polyw.field('vehicle','C',20)
+    polyw.field('units','C',10)
+    for area,name in zip(regions,names):
+        bounds = coordDictListToCoord2DList(area,0)
+        polyw.poly(parts=bounds)
+        polyw.record(
+            name,
+            alt,
+            approach,
+            bearing,
+            sidelap,
+            inst.name,
+            inst.frame,
+            inst.fieldOfView,
+            vehic,
+            units
+        )
+    polyw.save(fname)
 
 def flightPlanFromCoords(outpath,coords,scanlinebounds,alt,speed):
     if not os.path.isdir(outpath):
@@ -61,3 +99,4 @@ def flightPlanFromCoords(outpath,coords,scanlinebounds,alt,speed):
     linew.save(os.path.join(outpath,'scanlines'))
     footw.save(os.path.join(outpath,'footprints'))
     pointw.save(os.path.join(outpath,'points'))
+

@@ -8,7 +8,7 @@ try:
     import SHPParse
     import GPXParse
     import WaypointParse
-except:
+except ImportError:
     from . import LonLatMath as llmath
     from . import Spectrometer
     from . import KMLParse
@@ -322,6 +322,7 @@ class ScanArea(object):
 
         parallel_dir1 = (self._travel_dir+90)%360
         parallel_dir2 = (self._travel_dir-90)%360
+
         self._coords += self._findIntersectionsInDirection(
                 parallel_dir1,self._perimeter[2],first_point)[::first_traverse]
         if first_point is not None:
@@ -590,7 +591,28 @@ class ScanRegion(object):
         SHPParse.flightPlanFromCoords(fname,
                 self._coords,self.scanLineBoundBoxes,self._alt,speed)
         
-    
+    def toProjectShapeFile(self,fname,units):
+        """
+        Record a shapefile with enough extra metadata to reconstruct
+        the complete state the javascript viewer
+        """
+        if self._coords is None:
+            self.findScanLines()
+        names = [a.name for a in self.scanAreas]
+        perims = [a._perimeter for a in self.scanAreas]
+        SHPParse.planOutlineFromCoords(fname,perims,self._alt,self._overshoot,
+                self._bearing,self._sidelap,self._spectrometer,names,
+                self._vehicle,units)
+
+    @classmethod
+    def fromProjectShapeFile(Cls,shp_fname,home=None):
+        coords,meta = SHPParse.findPolyCoordsAndMeta(shp_fname)
+        home = home or coords[0][0]
+        region = Cls(home,**kwargs)
+        for perimeter in coords:
+            region.addScanArea(ScanArea(home,perimeter))
+        return region
+
     @classmethod
     def from2DLatLonArray(Cls,coords,home=None,names=None,**kwargs):
         home = home or coords[0][0]
