@@ -107,18 +107,7 @@
       </div>
     </div>
     <div id="control-panel">
-        <h4>Flight Config</h4>
-            <span>
-                Instrument:<br>
-                <select id="spectrometer"style="width:100%">
-                    <option>AVIRIS Classic</option>
-                    <option>AVIRIS Next Gen</option>
-                    <option selected>Headwall Nano Hyperspec</option>
-                    <option>Headwall VNIR-SWIR co-boresi</option>
-                    <option>Specim FENIX</option>
-                    <option>Norsk Elektro Optikk HySpex</option>
-                </select>
-            <br></span>
+        <h4>Flight Settings</h4>
             <span>
                 Vehicle:<br>
                 <select id="vehicle"style="width:100%">
@@ -137,6 +126,36 @@
                     <label><input id="metric" type="radio" name="units">Metric</label>
                 </form>
             </span>
+            <h4>Spectrometer</h4>
+            <table><tbody>
+              <tr>
+                <td>FOV (&deg;):</td>
+                <td><input type="text" style="width:3em" id="fov" value=17></span></td>
+              </tr>
+              <tr>
+                <td>Cross-FOV (&deg;):</td>
+                <td><input type="text" style="width:3em" id="ifov" value=0.03></span></td>
+              </tr>
+              <tr>
+                <td>Pixels (#):</td>
+                <td><input type="text" style="width:3em" id="px" value=640></span></td>
+              </tr>
+              <tr>
+                <td>Frame (ms):</td>
+                <td><input type="text" style="width:3em" id="frame_pd"value=2></td>
+              </tr>
+            </tbody></table>
+            <span>Presets:<br>
+                <select id="spectrometer"style="width:100%">
+                    <option selected>Custom</option>
+                    <option>AVIRIS Classic</option>
+                    <option>AVIRIS Next Gen</option>
+                    <option >Headwall Nano Hyperspec</option>
+                    <option>Headwall VNIR-SWIR co-boresi</option>
+                    <option>Specim FENIX</option>
+                    <option>Norsk Elektro Optikk HySpex</option>
+                </select>
+            <br></span>
             <h4>Scan Parameters</h4>
             <table><tbody>
             <tr>
@@ -154,10 +173,6 @@
             <tr>
                 <td>Sidelap (%):</td><td><input type="text" style="width:3em" id="sidelap"value=20></td>
             </tr> 
-            <tr>
-                <td>Frame (ms):</td>
-                <td><input type="text" style="width:3em" id="frame_pd"value=2></td>
-            </tr>
             </tbody></table>
             <h4>Flight Stats</h4>
             <table><tbody>

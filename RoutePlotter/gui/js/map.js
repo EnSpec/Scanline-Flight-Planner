@@ -391,13 +391,13 @@ var generatePath = function(){
     external.createPath(coords,function(coords,bounds,dist,speed,pxsize,scanlines){
         coords = _.map(coords,(c)=>cleanPyCoords(c));
         bounds = _.map(bounds,(c)=>cleanPyCoords(c));
-	if(UNITS=='US'){
-      	    $('#scan_len').html(Math.round(km2mi(dist)));
-	    $('#px_size').html(m2ft(pxsize).toFixed(2));
-	}else{
-      	    $('#scan_len').html(Math.round(dist));
-	    $('#px_size').html(Number(pxsize).toFixed(2));
-	}
+        if(UNITS=='US'){
+            $('#scan_len').html(Math.round(km2mi(dist)));
+            $('#px_size').html(m2ft(pxsize).toFixed(2));
+        }else{
+            $('#scan_len').html(Math.round(dist));
+            $('#px_size').html(Number(pxsize).toFixed(2));
+        }
         setScanSpeed(speed);
         if($('#vehicle').val()=='fullscale')
             setAirplaneScanPath(coords,scanlines);
@@ -412,7 +412,6 @@ var generatePath = function(){
             }
         }
         resetHome=true;
-    
     });
 }
 
@@ -463,13 +462,25 @@ $(document).ready(function(){
     $('#on-map-draw').click(toggle_draw_mode);
 
     $('#spectrometer').change(function(){
-        external.setSpectrometer($(this).val());
+        external.setSpectrometer($(this).val(),function(fov,ifov,pix){
+            $('#fov').val(fov);
+            $('#ifov').val(ifov);
+            $('#px').val(pix);
+        });
         generatePath();
     });
+
+    $('#fov, #ifov, #px').change(function(){
+        $('#spectrometer').val('Custom');
+        external.setCustomSpectrometer($('#fov').val(),$('#ifov').val(),
+                $('#px').val());
+        generatePath();
+
+    });
     $('#alt').change(function(){
-	if(UNITS=='US')
+        if(UNITS=='US')
             external.setAlt(ft2m($(this).val()));
-	else
+        else
             external.setAlt($(this).val());
         generatePath();
     });
@@ -518,31 +529,32 @@ $(document).ready(function(){
 
 
     $('#us').click(function(){
-	if(UNITS=="US")return;
+        if(UNITS=="US")return;
         $('#alt_label').html('Altitude (ft):');
         $('#appr_label').html('Approach (mi):');
         $('#dist_label').html('Distance (km):');
         $('#speed_label').html('Velocity (kts):');
         $('#px_label').html('Pixel Size (ft):');
 
-	$('#alt').val(Math.round(m2ft($('#alt').val())));
-	$('#overshoot').val(km2mi($('#overshoot').val()).toFixed(2));
+        $('#alt').val(Math.round(m2ft($('#alt').val())));
+        $('#overshoot').val(km2mi($('#overshoot').val()).toFixed(2));
 
-	UNITS = 'US';
+        UNITS = 'US';
         generatePath();
     });
+
     $('#metric').click(function(){
-	if(UNITS=="metric")return;
+        if(UNITS=="metric")return;
         $('#alt_label').html('Altitude (m):');
         $('#appr_label').html('Approach (km):');
         $('#dist_label').html('Distance (km):');
         $('#speed_label').html('Velocity (m/s):');
         $('#px_label').html('Pixel Size (m):');
 
-	$('#alt').val(Math.round(ft2m($('#alt').val())));
-	$('#overshoot').val(mi2km($('#overshoot').val()).toFixed(2));
-	    
-	UNITS = 'metric';
+        $('#alt').val(Math.round(ft2m($('#alt').val())));
+        $('#overshoot').val(mi2km($('#overshoot').val()).toFixed(2));
+            
+        UNITS = 'metric';
         generatePath();
     });
     $('#overshoot, #alt').change();

@@ -5,7 +5,7 @@ import sys
 import os
 import glob
 import time
-from multiprocessing import Process
+from multiprocessing import Process,Queue
 try:
     import ScanArea
     import Spectrometer
@@ -16,40 +16,45 @@ except ImportError:
 from tkinter import Tk,filedialog
 Tk().withdraw()
 
-def TkSaveSubProc(region,fmt):
-    if region is None:
-        return
-    if 'SHP' in fmt:
-        fname = filedialog.askdirectory()
-        if isinstance(fname,str):
-            try:
-                region.toShapeFile(fname)
-            except FileNotFoundError:
-                pass
-    elif 'GPX' in fmt:
-        fname = filedialog.asksaveasfilename(defaultextension=".gpx",
-                filetypes=[("Garmin GPX",".gpx")])
-        if isinstance(fname,str):
-            try:
-                region.toGPX(fname)
-            except FileNotFoundError:
-                pass
-    elif 'Waypoints' in fmt:
-        fname = filedialog.asksaveasfilename(defaultextension=".txt",
-                filetypes=[("APM Waypoints file",".txt")])
-        if isinstance(fname,str):
-            try:
-                region.toWayPoints(fname)
-            except FileNotFoundError:
-                pass
-    elif 'Project' in fmt:
-        fname = filedialog.asksaveasfilename(defaultextension=".shp",
-                filetypes=[("Project Shapefile",".shp")])
-        if isinstance(fname,str):
-            try:
-                region.toProjectShapeFile(fname,'US')
-            except FileNotFoundError:
-                pass
+FILE_QUEUE = Queue()
+def TkSaveSubProc(tQ):
+    while True:
+        region,fmt = tQ.get()
+        if fmt is None:
+            return
+        if region is None:
+            continue
+        if 'SHP' in fmt:
+            fname = filedialog.askdirectory()
+            if isinstance(fname,str):
+                try:
+                    region.toShapeFile(fname)
+                except FileNotFoundError:
+                    pass
+        elif 'GPX' in fmt:
+            fname = filedialog.asksaveasfilename(defaultextension=".gpx",
+                    filetypes=[("Garmin GPX",".gpx")])
+            if isinstance(fname,str):
+                try:
+                    region.toGPX(fname)
+                except FileNotFoundError:
+                    pass
+        elif 'Waypoints' in fmt:
+            fname = filedialog.asksaveasfilename(defaultextension=".txt",
+                    filetypes=[("APM Waypoints file",".txt")])
+            if isinstance(fname,str):
+                try:
+                    region.toWayPoints(fname)
+                except FileNotFoundError:
+                    pass
+        elif 'Project' in fmt:
+            fname = filedialog.asksaveasfilename(defaultextension=".shp",
+                    filetypes=[("Project Shapefile",".shp")])
+            if isinstance(fname,str):
+                try:
+                    region.toProjectShapeFile(fname,'US')
+                except FileNotFoundError:
+                    pass
 
 
 class External(object):
@@ -108,8 +113,22 @@ class External(object):
         if(self._isfloat(val)):
             self._scan_pd = float(val)
     
-    def setSpectrometer(self,val):
-        self._spectrometer = Spectrometer.spectrometerByName(val)()
+    def setSpectrometer(self,val,js_callback=None):
+        try:
+            self._spectrometer = Spectrometer.spectrometerByName(val)()
+        except KeyError:
+            #got an unknown spectrometer name, silently pass
+            return
+        if(js_callback):
+            js_callback.Call(self._spectrometer.fieldOfView,
+                    self._spectrometer.crossFieldOfView,
+                    self._spectrometer.pixels)
+
+    def setCustomSpectrometer(self,fov,ifov,px):
+        fov = float(fov)
+        ifov = float(ifov)
+        px = int(px)
+        self._spectrometer = Spectrometer.Spectrometer(fov,ifov,px,'Custom')
 
     def setVehicle(self,val):
         self._vehicle = val
@@ -168,10 +187,8 @@ class External(object):
     def savePath(self,fmt):
         if self._region is None:
             return
-        if(self.p):
-            self.p.join()
-        self.p = Process(target=TkSaveSubProc,args=(self._region,fmt))
-        self.p.start()
+        FILE_QUEUE.put((self._region,fmt))
+        #self.p.join()
 
 def main():
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -179,6 +196,8 @@ def main():
     check_versions()
     sys.excepthook = cef.ExceptHook  # To shutdown all CEF processes on error
 
+    p = Process(target=TkSaveSubProc,args=(FILE_QUEUE,))
+    p.start()
     
     cef.Initialize()
     #set up a browser
@@ -196,8 +215,9 @@ def main():
     #enter main loop
     cef.MessageLoop()
     cef.Shutdown()
-    if(external.p):
-        external.p.join()
+    #send the (overengineered) save dialog a poison pill
+    FILE_QUEUE.put((None,None))
+    p.join()
 
 
 def check_versions():

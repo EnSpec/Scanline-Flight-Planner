@@ -29,3 +29,39 @@ UnboundLocalError: local variable 'coords' referenced before assignment
     .split('.')[0]+'Z' for i in range(len(coords))]
 UnboundLocalError: local variable 'coords' referenced before assignment
 
+
+[2018-01-24 16:48:50] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+TypeError: setSpectrometer() takes 2 positional arguments but 3 were given
+
+
+[2018-01-24 17:29:53] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:96736)
+  File "gui.py", line 112, in setSpectrometer
+    self._spectrometer = Spectrometer.spectrometerByName(val)()
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/Spectrometer.py", line 89, in spectrometerByName
+    }[name]
+KeyError: 'Custom'
+
+
+[2018-01-24 17:58:39] Traceback (most recent call last):
+  File "gui.py", line 228, in <module>
+    main()
+  File "gui.py", line 209, in main
+    external = External()
+  File "gui.py", line 74, in __init__
+    self.p = Process(target=TkSaveSubProc,args=(self.Q))
+  File "/home/mwestphall/miniconda3/lib/python3.6/multiprocessing/process.py", line 80, in __init__
+    self._args = tuple(args)
+TypeError: 'Queue' object is not iterable
+
+
+[2018-01-24 18:10:29] Traceback (most recent call last):
+  File "gui.py", line 233, in <module>
+    main()
+  File "gui.py", line 222, in main
+    external.p.join()
+  File "/home/mwestphall/miniconda3/lib/python3.6/multiprocessing/process.py", line 123, in join
+    assert self._popen is not None, 'can only join a started process'
+AssertionError: can only join a started process
+

@@ -32,6 +32,10 @@ class Spectrometer(object):
     def frame(self):
         return self._frame_pd
 
+    @property
+    def pixels(self):
+        return self._px
+
     def swathWidthAt(self,alt):
         return 2*alt*np.tan(np.radians(self.fieldOfView/2))
     

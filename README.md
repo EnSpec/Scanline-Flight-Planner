@@ -1,9 +1,9 @@
-# Scanning Route Plotter
+# Pushbroom Planner
 -------------------------
 
 ## About
-Scanning Route Plotter is a Python3 gui application that generates flight paths
- for aircraft carrying imaging spectrometers. 
+Pushbroom Planner is a Python3 gui application that generates flight paths
+ for aircraft carrying pushbroom scanners. 
 ## Installation
 The installation of this package requires both Python3 and pip3. Python3 comes 
 with Ubuntu by default, but pip3 must be installed from the package manager 
