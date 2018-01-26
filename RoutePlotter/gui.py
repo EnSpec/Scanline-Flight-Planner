@@ -206,14 +206,14 @@ class External(object):
         FILE_QUEUE.put((self._region,fmt))
         #self.p.join()
 
-def main():
+def CefThread():
     script_dir = os.path.dirname(os.path.realpath(__file__))
     url= 'file://%s/gui/index.html'%script_dir
     check_versions()
     sys.excepthook = cef.ExceptHook  # To shutdown all CEF processes on error
 
-    p = Thread(target=TkSaveSubProc,args=(FILE_QUEUE,))
-    p.start()
+    #p = Thread(target=TkSaveSubProc,args=(FILE_QUEUE,))
+    #p.start()
     
     cef.Initialize()
     #set up a browser
@@ -231,10 +231,17 @@ def main():
     #enter main loop
     cef.MessageLoop()
     cef.Shutdown()
-    #send the (overengineered) save dialog a poison pill
     FILE_QUEUE.put((None,None))
-    p.join()
 
+def main():
+
+
+    t = Thread(target=CefThread)
+    t.start()
+    TkSaveSubProc(FILE_QUEUE)
+    #p = Thread(target=TkSaveSubProc,args=(FILE_QUEUE,))
+    #p.start()
+    
 
 def check_versions():
     print("[{prog}] CEF Python {ver}".format(prog=sys.argv[0],ver=cef.__version__))
