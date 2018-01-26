@@ -511,8 +511,13 @@ $(document).ready(function(){
     $('#save,#on-map-save').click(function(){
         external.savePath($('#fmt').val());
     });
+
     $('#save_native').click(function(){
         external.savePath('Project');
+    });
+    $('#load').click(function(){
+        external.loadFile(function(){});
+
     });
 
     $('#summon_help').click(function(){

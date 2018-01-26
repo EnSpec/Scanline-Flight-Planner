@@ -5,7 +5,9 @@ import sys
 import os
 import glob
 import time
-from multiprocessing import Process,Queue
+#from multiprocessing import Process,Queue
+from threading import Thread
+from queue import Queue
 try:
     import ScanArea
     import Spectrometer
@@ -19,11 +21,16 @@ Tk().withdraw()
 FILE_QUEUE = Queue()
 def TkSaveSubProc(tQ):
     while True:
-        region,fmt = tQ.get()
+        args = tQ.get()
+        fmt = args[1]
         if fmt is None:
             return
-        if region is None:
-            continue
+        if 'Load' in fmt:
+            callback = args[0]
+        else:
+            region = args[0]
+            if region is None:
+                continue
         if 'SHP' in fmt:
             fname = filedialog.askdirectory()
             if isinstance(fname,str):
@@ -55,6 +62,15 @@ def TkSaveSubProc(tQ):
                     region.toProjectShapeFile(fname,'US')
                 except FileNotFoundError:
                     pass
+        elif 'Load' in fmt:
+            fname = filedialog.askopenfilename(defaultextension=".shp",
+                    filetypes=[("Project Shapefile",".shp")])
+            if isinstance(fname,str):
+                try:
+                    callback(fname)
+                except FileNotFoundError:
+                    pass
+            
 
 
 class External(object):
@@ -142,11 +158,11 @@ class External(object):
         js_callback.Call(speed,self.noop)
 
     def loadFile(self,js_callback):
-        fname = filedialog.askopenfilename()
-        if isinstance(fname,str) and os.path.exists(fname):
-            self._fname = fname
-            fname = os.path.split(self._fname)[1]
-            js_callback.Call(fname,self.noop)
+        callback = lambda f:self.finishLoad(f,js_callback)
+        FILE_QUEUE.put((callback,'Load'))
+
+    def finishLoad(self,fname,js_callback):
+        print("Callback called")
 
     def polygonizePoints(self,points,js_callback):
         area = ScanArea.ScanArea(points[0],points)
@@ -196,7 +212,7 @@ def main():
     check_versions()
     sys.excepthook = cef.ExceptHook  # To shutdown all CEF processes on error
 
-    p = Process(target=TkSaveSubProc,args=(FILE_QUEUE,))
+    p = Thread(target=TkSaveSubProc,args=(FILE_QUEUE,))
     p.start()
     
     cef.Initialize()
