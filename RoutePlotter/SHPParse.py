@@ -29,10 +29,12 @@ def findRegionType(shpfile,types_to_check=("Polygon","Point")):
 
 def findMeta(shpfile):
     shpf = shapefile.Reader(shpfile)
-    fields = shpf.fields
-    records = shpf.records()
-    out = {key:[]for key in fields}
-    print(records)
+    keys = [key[0] for key in shpf.fields[1:]]
+    out = {key:[] for key in keys}
+    for record in shpf.records():
+        for idx,value in enumerate(record):
+            out[keys[idx]].append(value)
+    return out
 
 def coordDictListToCoord2DList(coord_dict_list,alt=0):
     coords = list(map(lambda c:[c['lon'],c['lat'],alt],coord_dict_list))

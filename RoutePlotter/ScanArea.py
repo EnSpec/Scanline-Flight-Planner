@@ -606,9 +606,12 @@ class ScanRegion(object):
 
     @classmethod
     def fromProjectShapeFile(Cls,shp_fname,home=None):
-        coords,meta = SHPParse.findPolyCoordsAndMeta(shp_fname)
+        region = Cls(home)
+        coords = SHPParse.findPolyCoords(shp_fname)
+        meta = SHPParse.findMeta(shp_fname)
+        print(coords)
+        print(meta)
         home = home or coords[0][0]
-        region = Cls(home,**kwargs)
         for perimeter in coords:
             region.addScanArea(ScanArea(home,perimeter))
         return region

@@ -162,7 +162,7 @@ class External(object):
         FILE_QUEUE.put((callback,'Load'))
 
     def finishLoad(self,fname,js_callback):
-        print("Callback called")
+        region = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
 
     def polygonizePoints(self,points,js_callback):
         area = ScanArea.ScanArea(points[0],points)

@@ -65,3 +65,61 @@ TypeError: 'Queue' object is not iterable
     assert self._popen is not None, 'can only join a started process'
 AssertionError: can only join a started process
 
+
+[2018-01-26 10:21:02] Traceback (most recent call last):
+  File "gui.py", line 254, in <module>
+    main()
+  File "gui.py", line 241, in main
+    TkSaveSubProc(FILE_QUEUE)
+  File "gui.py", line 70, in TkSaveSubProc
+    callback(fname)
+  File "gui.py", line 161, in <lambda>
+    callback = lambda f:self.finishLoad(f,js_callback)
+  File "gui.py", line 165, in finishLoad
+    region = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 611, in fromProjectShapeFile
+    meta = SHPParse.findMeta(shp_fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/SHPParse.py", line 34, in findMeta
+    out = {key:[]for key in fields}
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/SHPParse.py", line 34, in <dictcomp>
+    out = {key:[]for key in fields}
+TypeError: unhashable type: 'list'
+
+
+[2018-01-26 10:21:44] Traceback (most recent call last):
+  File "gui.py", line 254, in <module>
+    main()
+  File "gui.py", line 241, in main
+    TkSaveSubProc(FILE_QUEUE)
+  File "gui.py", line 70, in TkSaveSubProc
+    callback(fname)
+  File "gui.py", line 161, in <lambda>
+    callback = lambda f:self.finishLoad(f,js_callback)
+  File "gui.py", line 165, in finishLoad
+    region = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 611, in fromProjectShapeFile
+    meta = SHPParse.findMeta(shp_fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/SHPParse.py", line 35, in findMeta
+    out = {key:[]for key in fields}
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/SHPParse.py", line 35, in <dictcomp>
+    out = {key:[]for key in fields}
+TypeError: unhashable type: 'list'
+
+
+[2018-01-26 10:34:18] Traceback (most recent call last):
+  File "gui.py", line 254, in <module>
+    main()
+  File "gui.py", line 241, in main
+    TkSaveSubProc(FILE_QUEUE)
+  File "gui.py", line 70, in TkSaveSubProc
+    callback(fname)
+  File "gui.py", line 161, in <lambda>
+    callback = lambda f:self.finishLoad(f,js_callback)
+  File "gui.py", line 165, in finishLoad
+    region = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/ScanArea.py", line 611, in fromProjectShapeFile
+    meta = SHPParse.findMeta(shp_fname)
+  File "/home/mwestphall/MissionPlanner/AreaScanner/RoutePlotter/SHPParse.py", line 34, in findMeta
+    for record in records:
+NameError: name 'records' is not defined
+
