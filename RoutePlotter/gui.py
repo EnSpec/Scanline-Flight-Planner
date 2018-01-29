@@ -18,8 +18,15 @@ except ImportError:
 from tkinter import Tk,filedialog
 Tk().withdraw()
 
+#global queue object for the two gui threads to use
 FILE_QUEUE = Queue()
-def TkSaveSubProc(tQ):
+
+#global flag to keep track of whether main gui can ask for more save dialogs
+DIALOGS_ALLOWED = True
+
+#Tkinter needs the main thread 
+#TODO: less silly workaround
+def TkSaveThread(tQ):
     while True:
         args = tQ.get()
         fmt = args[1]
@@ -68,8 +75,9 @@ def TkSaveSubProc(tQ):
             if isinstance(fname,str):
                 try:
                     callback(fname)
-                except FileNotFoundError:
+                except Exception:
                     pass
+        DIALOGS_ALLOWED = True
             
 
 
@@ -119,7 +127,6 @@ class External(object):
     
     def setNames(self,val):
         self._names=val
-        print(self._names)
 
     def setBearing(self,val):
         if(self._isfloat(val)):
@@ -158,11 +165,33 @@ class External(object):
         js_callback.Call(speed,self.noop)
 
     def loadFile(self,js_callback):
-        callback = lambda f:self.finishLoad(f,js_callback)
+        callback = lambda f:self.finishLoad(f)
+        self.js_callback = js_callback
         FILE_QUEUE.put((callback,'Load'))
 
-    def finishLoad(self,fname,js_callback):
-        region = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
+    def finishLoad(self,fname):
+        region,coords,meta = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
+        self._region = region
+        self._vehicle = meta['vehicle'][0]
+        self._alt = meta['alt'][0]
+        self._bearing = meta['bearing'][0]
+        self._sidelap = meta['sidelap'][0]
+        self._overshoot = meta['approach'][0]
+
+        self._spectrometer = region._spectrometer
+        region.setFindScanLineBounds(True)
+        px_size = self._spectrometer.pixelSizeAt(self._alt)
+        region.findScanLines()
+        flat_coords = region.flattenCoords()
+        bounds= region.boundBox
+        scanlines=region.scanLineBoundBoxes
+        dist = "%.2f"%(region.totalScanLength/1000)
+        speed = "%.2f"%region.scanVelocity
+        self._region = region
+        self.js_callback.Call(flat_coords,bounds,dist,speed,px_size,scanlines,coords,
+                meta['name'], self._alt,self._bearing,self._sidelap,
+                self._overshoot, self._spectrometer.fieldOfView,
+                self._spectrometer.crossFieldOfView, self._spectrometer._px)
 
     def polygonizePoints(self,points,js_callback):
         area = ScanArea.ScanArea(points[0],points)
@@ -204,7 +233,6 @@ class External(object):
         if self._region is None:
             return
         FILE_QUEUE.put((self._region,fmt))
-        #self.p.join()
 
 def CefThread():
     script_dir = os.path.dirname(os.path.realpath(__file__))
@@ -238,7 +266,7 @@ def main():
 
     t = Thread(target=CefThread)
     t.start()
-    TkSaveSubProc(FILE_QUEUE)
+    TkSaveThread(FILE_QUEUE)
     #p = Thread(target=TkSaveSubProc,args=(FILE_QUEUE,))
     #p.start()
     
@@ -252,3 +280,4 @@ def check_versions():
 
 if __name__ == '__main__':
     main()
+    

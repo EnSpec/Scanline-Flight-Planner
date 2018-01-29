@@ -383,36 +383,47 @@ var setScanSpeed=function(speed){
     $('#scan_time').html(date.toISOString().substr(11,8));
 };
 
+var createPathCallback= function(coords,bounds,dist,speed,pxsize,scanlines){
+    coords = _.map(coords,(c)=>cleanPyCoords(c));
+    bounds = _.map(bounds,(c)=>cleanPyCoords(c));
+    if(UNITS=='US'){
+        $('#scan_len').html(Math.round(km2mi(dist)));
+        $('#px_size').html(m2ft(pxsize).toFixed(2));
+    }else{
+        $('#scan_len').html(Math.round(dist));
+        $('#px_size').html(Number(pxsize).toFixed(2));
+    }
+    setScanSpeed(speed);
+    if($('#vehicle').val()=='fullscale')
+        setAirplaneScanPath(coords,scanlines);
+    else
+        setScanPath(coords);
+
+    if(resetHome){
+        if($('#vehicle').val()=='quadcopter')
+            setHomeMarker(coords[0]);
+        if(!loadFromDrawing){
+            setBoundBox(bounds);
+        }
+    }
+    resetHome=true;
+}
+
+//This is a big one and I'm not sure how to pass objects with CEF
+var loadFileCallback = function(coords,bounds,dist,speed,pxsize,scanlines,
+                                poly_coords,poly_names,alt,bearing,sidelap,
+	                        approach,fov,ifov,px){
+	console.log("I sure whish google earth worked");
+    loadFromDrawing = false;
+    createPathCallback(coords,bounds,dist,speed,pxsize,scanlines);
+    loadFromDrawing = true;
+}
 var generatePath = function(){
     if(!($('#alt').val()&&$('#bearing').val())) return;
     if(!loadFromDrawing && $('#infile').html() == noFileLoadedText) return;
     var coords = (loadFromDrawing)?userDrawnRegion.getCoords():false;
     if(coords) external.setNames(userDrawnRegion.getNames());
-    external.createPath(coords,function(coords,bounds,dist,speed,pxsize,scanlines){
-        coords = _.map(coords,(c)=>cleanPyCoords(c));
-        bounds = _.map(bounds,(c)=>cleanPyCoords(c));
-        if(UNITS=='US'){
-            $('#scan_len').html(Math.round(km2mi(dist)));
-            $('#px_size').html(m2ft(pxsize).toFixed(2));
-        }else{
-            $('#scan_len').html(Math.round(dist));
-            $('#px_size').html(Number(pxsize).toFixed(2));
-        }
-        setScanSpeed(speed);
-        if($('#vehicle').val()=='fullscale')
-            setAirplaneScanPath(coords,scanlines);
-        else
-            setScanPath(coords);
-
-        if(resetHome){
-            if($('#vehicle').val()=='quadcopter')
-                setHomeMarker(coords[0]);
-            if(!loadFromDrawing){
-                setBoundBox(bounds);
-            }
-        }
-        resetHome=true;
-    });
+    external.createPath(coords,createPathCallback);
 }
 
 var toggle_draw_mode = function(){
@@ -516,8 +527,7 @@ $(document).ready(function(){
         external.savePath('Project');
     });
     $('#load').click(function(){
-        external.loadFile(function(){});
-
+        external.loadFile(loadFileCallback);
     });
 
     $('#summon_help').click(function(){
@@ -527,6 +537,7 @@ $(document).ready(function(){
             $('#darken').height($(this).height());
         });
     });
+
     $('#darken').click(function(){
         $(this).hide();
         $(window).unbind('resize');

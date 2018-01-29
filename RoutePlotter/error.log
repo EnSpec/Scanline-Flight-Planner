@@ -123,3 +123,75 @@ TypeError: unhashable type: 'list'
     for record in records:
 NameError: name 'records' is not defined
 
+
+[2018-01-26 15:33:40] Traceback (most recent call last):
+  File "gui.py", line 254, in <module>
+    main()
+  File "gui.py", line 241, in main
+    TkSaveSubProc(FILE_QUEUE)
+  File "gui.py", line 70, in TkSaveSubProc
+    callback(fname)
+  File "gui.py", line 161, in <lambda>
+    callback = lambda f:self.finishLoad(f,js_callback)
+  File "gui.py", line 165, in finishLoad
+    region = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 610, in fromProjectShapeFile
+    coords = SHPParse.findPolyCoords(shp_fname)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\SHPParse.py", line 17, in findPolyCoords
+    for shape in shpf.shapes():
+  File "C:\Users\westphall\AppData\Local\Programs\Python\Python36\lib\site-packages\shapefile.py", line 435, in shapes
+    shp = self.__getFileObj(self.shp)
+  File "C:\Users\westphall\AppData\Local\Programs\Python\Python36\lib\site-packages\shapefile.py", line 301, in __getFileObj
+    raise ShapefileException("Shapefile Reader requires a shapefile or file-like object.")
+shapefile.ShapefileException: Shapefile Reader requires a shapefile or file-like object.
+
+
+[2018-01-26 15:35:18] Traceback (most recent call last):
+  File "gui.py", line 254, in <module>
+    main()
+  File "gui.py", line 241, in main
+    TkSaveSubProc(FILE_QUEUE)
+  File "gui.py", line 70, in TkSaveSubProc
+    callback(fname)
+  File "gui.py", line 161, in <lambda>
+    callback = lambda f:self.finishLoad(f,js_callback)
+  File "gui.py", line 165, in finishLoad
+    region = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 610, in fromProjectShapeFile
+    coords = SHPParse.findPolyCoords(shp_fname)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\SHPParse.py", line 17, in findPolyCoords
+    for shape in shpf.shapes():
+  File "C:\Users\westphall\AppData\Local\Programs\Python\Python36\lib\site-packages\shapefile.py", line 435, in shapes
+    shp = self.__getFileObj(self.shp)
+  File "C:\Users\westphall\AppData\Local\Programs\Python\Python36\lib\site-packages\shapefile.py", line 301, in __getFileObj
+    raise ShapefileException("Shapefile Reader requires a shapefile or file-like object.")
+shapefile.ShapefileException: Shapefile Reader requires a shapefile or file-like object.
+
+
+[2018-01-26 16:38:25] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:98999)
+  File "gui.py", line 168, in loadFile
+    if not DIALOGS_ALLOWED:
+UnboundLocalError: local variable 'DIALOGS_ALLOWED' referenced before assignment
+
+
+[2018-01-26 16:39:45] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:98999)
+  File "gui.py", line 168, in loadFile
+    if not DIALOGS_ALLOWED:
+UnboundLocalError: local variable 'DIALOGS_ALLOWED' referenced before assignment
+
+
+[2018-01-29 15:45:26] Traceback (most recent call last):
+  File "gui.py", line 284, in <module>
+    if __name__ == '__main__':
+  File "gui.py", line 271, in main
+    t.start()
+  File "gui.py", line 31, in TkSaveThread
+    args = tQ.get()
+  File "C:\Users\westphall\AppData\Local\Programs\Python\Python36\lib\queue.py", line 164, in get
+    self.not_empty.wait()
+  File "C:\Users\westphall\AppData\Local\Programs\Python\Python36\lib\threading.py", line 295, in wait
+    waiter.acquire()
+KeyboardInterrupt
+

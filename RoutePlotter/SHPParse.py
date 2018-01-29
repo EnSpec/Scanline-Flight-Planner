@@ -53,6 +53,8 @@ def planOutlineFromCoords(fname,regions,alt,approach,bearing,sidelap,
     polyw.field('inst','C',40)
     polyw.field('frame','F',12)
     polyw.field('fov','F',10)
+    polyw.field('ifov','F',10)
+    polyw.field('pixels','F',10)
     polyw.field('vehicle','C',20)
     polyw.field('units','C',10)
     for area,name in zip(regions,names):
@@ -67,6 +69,8 @@ def planOutlineFromCoords(fname,regions,alt,approach,bearing,sidelap,
             inst.name,
             inst.frame,
             inst.fieldOfView,
+            inst.crossFieldOfView,
+            inst.pixels,
             vehic,
             units
         )

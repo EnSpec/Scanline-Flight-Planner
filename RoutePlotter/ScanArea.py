@@ -606,15 +606,23 @@ class ScanRegion(object):
 
     @classmethod
     def fromProjectShapeFile(Cls,shp_fname,home=None):
-        region = Cls(home)
         coords = SHPParse.findPolyCoords(shp_fname)
         meta = SHPParse.findMeta(shp_fname)
-        print(coords)
-        print(meta)
+        kwargs = {k:meta[k][0]for k in ('vehicle','alt','bearing','approach')}
+        kwargs['overshoot'] = kwargs.pop('approach')
         home = home or coords[0][0]
-        for perimeter in coords:
-            region.addScanArea(ScanArea(home,perimeter))
-        return region
+        region = Cls(home,**kwargs)
+        names = meta['name']
+        for perimeter,name in zip(coords,names):
+            region.addScanArea(ScanArea(home,perimeter,name = name ))
+        try:
+            spectrometer = Spectrometer.spectrometerByName(meta['inst'][0])()
+        except:
+            args= [meta[k][0]for k in ('fov','ifov','pixels','inst')]
+            spectrometer = Spectrometer.Spectrometer(*args)
+        region.setSpectrometer(spectrometer)
+
+        return region,coords,meta
 
     @classmethod
     def from2DLatLonArray(Cls,coords,home=None,names=None,**kwargs):
