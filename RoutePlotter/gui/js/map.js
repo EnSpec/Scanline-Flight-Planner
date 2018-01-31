@@ -1,6 +1,7 @@
 
 var map;
 var searchBox;
+var resetBounds = false;
 var inDrawMode = false;
 var loadFromDrawing = true;
 var UNITS = "US";
@@ -97,24 +98,25 @@ var userDrawnRegion = {
         });
 
     },
-    addPolyFromCoords: function(coords){
+    addPolyFromCoords: function(coords,name){
         var newPoly = new google.maps.Polygon({
-	    paths:coords,
+            paths:coords,
             strokeColor:'#0000ff',
             strokeOpacity:0.8,
             strokeWeight:2,
             fillColor: '#0000ff',
-            fillOpacity: 0.35,
-            draggable: true,
-            editable:true
-	});
-	closeVertices(undefined,newPoly);
+            fillOpacity: (inDrawMode)?0.35:0,
+            draggable: inDrawMode,
+            editable: inDrawMode
+        });
+        newPoly.setMap(map);
+        this.closeVertices(undefined,newPoly,name);
     },
 
-    closeVertices: function(event,newPoly){
+    closeVertices: function(event,newPoly,name){
         //add the newly drawn poly to our list so that we can pass it to
         //gui.py once the user's done drawing
-	if(newPoly === undefined)
+        if(newPoly === undefined)
             newPoly = event.overlay;
         //sometimes a poly doesn't get completed, in that case delete it
         if(newPoly.getPath().getLength() < 3){
@@ -128,6 +130,8 @@ var userDrawnRegion = {
         var my_label = addRouteLi();
         my_label.mouseenter(function(){ self.highlight(newPoly); });
         my_label.mouseleave(function(){ self.unhighlight(newPoly); });
+        if(name)
+            my_label.val(name);
         newPoly.name_label = my_label;
         my_label.focus();
         my_label.select();
@@ -328,7 +332,7 @@ function initMap() {
     //code taken from 
     searchBox = new google.maps.places.SearchBox(
             document.getElementById('pac-input'));
-        // Bias the SearchBox results towards current map's viewport.
+    // Bias the SearchBox results towards current map's viewport.
     map.addListener('bounds_changed', function() {
         searchBox.setBounds(map.getBounds());
     });
@@ -377,15 +381,18 @@ var setScanSpeed=function(speed){
         $('#scan_speed').html(Math.round(ms2kts(speed)));
     else
         $('#scan_speed').html(Math.round(speed));
-    var seconds = Math.floor(1000*Number($('#scan_len').html())/Number(speed));
-    var date = new Date(null);
-    date.setSeconds(seconds);
-    $('#scan_time').html(date.toISOString().substr(11,8));
+    if(speed > 0){
+        var seconds = Math.floor(1000*Number($('#scan_len').html())/Number(speed));
+        var date = new Date(null);
+        date.setSeconds(Math.abs(seconds));
+        console.log(seconds);
+        $('#scan_time').html(date.toISOString().substr(11,8));
+    }
 };
 
 var createPathCallback= function(coords,bounds,dist,speed,pxsize,scanlines){
-    coords = _.map(coords,(c)=>cleanPyCoords(c));
-    bounds = _.map(bounds,(c)=>cleanPyCoords(c));
+    coords = _.map(coords,cleanPyCoords);
+    bounds = _.map(bounds,cleanPyCoords);
     if(UNITS=='US'){
         $('#scan_len').html(Math.round(km2mi(dist)));
         $('#px_size').html(m2ft(pxsize).toFixed(2));
@@ -402,22 +409,42 @@ var createPathCallback= function(coords,bounds,dist,speed,pxsize,scanlines){
     if(resetHome){
         if($('#vehicle').val()=='quadcopter')
             setHomeMarker(coords[0]);
-        if(!loadFromDrawing){
+        if(resetBounds){
+            console.log("HHHHH");
             setBoundBox(bounds);
+            resetBounds=false;
         }
     }
     resetHome=true;
 }
 
-//This is a big one and I'm not sure how to pass objects with CEF
-var loadFileCallback = function(coords,bounds,dist,speed,pxsize,scanlines,
-                                poly_coords,poly_names,alt,bearing,sidelap,
-	                        approach,fov,ifov,px){
-	console.log("I sure whish google earth worked");
-    loadFromDrawing = false;
-    createPathCallback(coords,bounds,dist,speed,pxsize,scanlines);
-    loadFromDrawing = true;
+var loadFileCallback = function(coords,vehicle,alt,bearing,sidelap,
+                                overshoot,fov,ifov,px,s_name,p_names){
+    if(UNITS=='US'){
+        alt = m2ft(alt);
+        overshoot = km2mi(overshoot/1000);
+    }else{
+        overshoot /= 1000; 
+    }
+    //using jQuery didn't seem like a mistake until now
+    $('#vehicle').val(vehicle);
+    $('#alt').val(alt.toFixed(0));
+    $('#bearing').val(bearing);
+    $('#sidelap').val(sidelap);
+    $('#overshoot').val(overshoot.toFixed(2));
+    $('#fov').val(fov);
+    $('#ifov').val(ifov);
+    $('#ifov').val(ifov);
+    $('#px').val(px);
+    $('#spectrometer').val(s_name);
+    _.each(coords,function(perim,idx){
+        perim = _.map(perim,cleanPyCoords);
+        userDrawnRegion.addPolyFromCoords(perim,p_names[idx]);
+    });
+    resetBounds = true;
+    generatePath();
 }
+
 var generatePath = function(){
     if(!($('#alt').val()&&$('#bearing').val())) return;
     if(!loadFromDrawing && $('#infile').html() == noFileLoadedText) return;
@@ -432,7 +459,7 @@ var toggle_draw_mode = function(){
         loadFromDrawing = true;
         $('#generate,#save,#infile').prop('disabled',true);
         $('#pac-input').prop('disabled',false);
-        $('#start_draw').html("Finish Drawing");
+        $('#start_draw').html("Finish");
         $('#on-map-draw').html("&#10003;");
         userDrawnRegion.enterDrawMode();
         map.setOptions({

@@ -170,29 +170,21 @@ class External(object):
         FILE_QUEUE.put((callback,'Load'))
 
     def finishLoad(self,fname):
-        region,coords,meta = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
-        self._region = region
+        spectrometer,coords,meta = ScanArea.ScanRegion.fromProjectShapeFile(fname,self._home)
+        #self._region = region
         self._vehicle = meta['vehicle'][0]
         self._alt = meta['alt'][0]
         self._bearing = meta['bearing'][0]
         self._sidelap = meta['sidelap'][0]
         self._overshoot = meta['approach'][0]
+        #print(self._alt,self._bearing,self._sidelap,self._overshoot)
 
-        self._spectrometer = region._spectrometer
-        region.setFindScanLineBounds(True)
-        px_size = self._spectrometer.pixelSizeAt(self._alt)
-        region.findScanLines()
-        flat_coords = region.flattenCoords()
-        bounds= region.boundBox
-        scanlines=region.scanLineBoundBoxes
-        dist = "%.2f"%(region.totalScanLength/1000)
-        speed = "%.2f"%region.scanVelocity
-        self._region = region
-        self.js_callback.Call(flat_coords,bounds,dist,speed,px_size,scanlines,coords,
-                meta['name'], self._alt,self._bearing,self._sidelap,
-                self._overshoot, self._spectrometer.fieldOfView,
-                self._spectrometer.crossFieldOfView, self._spectrometer._px)
-
+        self._spectrometer = spectrometer
+        self.js_callback.Call(coords,self._vehicle,self._alt,self._bearing,
+                self._sidelap,self._overshoot, spectrometer.fieldOfView,
+                spectrometer.crossFieldOfView,spectrometer._px,
+                spectrometer._name,meta['name']
+        )
     def polygonizePoints(self,points,js_callback):
         area = ScanArea.ScanArea(points[0],points)
         js_callback.Call(area._perimeter,self.noop)
