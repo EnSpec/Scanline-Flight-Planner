@@ -181,10 +181,11 @@ class External(object):
 
         self._spectrometer = spectrometer
         self.js_callback.Call(coords,self._vehicle,self._alt,self._bearing,
-                self._sidelap,self._overshoot, spectrometer.fieldOfView,
+                self._sidelap*100,self._overshoot, spectrometer.fieldOfView,
                 spectrometer.crossFieldOfView,spectrometer._px,
                 spectrometer._name,meta['name']
         )
+
     def polygonizePoints(self,points,js_callback):
         area = ScanArea.ScanArea(points[0],points)
         js_callback.Call(area._perimeter,self.noop)
@@ -193,7 +194,7 @@ class External(object):
         area = ScanArea.ScanArea(points[0],points)
         js_callback.Call(area._center,self.noop)
 
-    def createPath(self,coords,js_callback):
+    def createPath(self,coords,js_callback,err_callback):
         if coords:
             region = ScanArea.ScanRegion.from2DLatLonArray(coords,self._home,
                     names = self._names)
@@ -212,14 +213,17 @@ class External(object):
         scanner.setFramePeriod(self._scan_pd)
         px_size = scanner.pixelSizeAt(self._alt)
         region.setSpectrometer(scanner)
-        region.findScanLines()
-        coords = region.flattenCoords()
-        bounds= region.boundBox
-        scanlines=region.scanLineBoundBoxes
-        dist = "%.2f"%(region.totalScanLength/1000)
-        speed = "%.2f"%region.scanVelocity
-        self._region = region
-        js_callback.Call(coords,bounds,dist,speed,px_size,scanlines)
+        try:
+            region.findScanLines()
+            coords = region.flattenCoords()
+            bounds= region.boundBox
+            scanlines=region.scanLineBoundBoxes
+            dist = "%.2f"%(region.totalScanLength/1000)
+            speed = "%.2f"%region.scanVelocity
+            self._region = region
+            js_callback.Call(coords,bounds,dist,speed,px_size,scanlines)
+        except ScanArea.ScanLineDensityError:
+            err_callback.Call()
 
     def savePath(self,fmt):
         if self._region is None:

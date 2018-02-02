@@ -1,5 +1,6 @@
 const ROUTE_NAME_LI = "<li class='route-name-li'> "+
 "<input id='route-name-{}' class='route-name-in' type='text'>"+
+"<span class='route-li-delete'> &#x274C;</span>"+
 "</li>";
 
 var greatest_id = 0;

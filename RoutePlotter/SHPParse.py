@@ -51,9 +51,9 @@ def planOutlineFromCoords(fname,regions,alt,approach,bearing,sidelap,
     polyw.field('bearing','F',12)
     polyw.field('sidelap','F',12)
     polyw.field('inst','C',40)
-    polyw.field('frame','F',12)
-    polyw.field('fov','F',10)
-    polyw.field('ifov','F',10)
+    polyw.field('frame','S',6)
+    polyw.field('fov','S',8)
+    polyw.field('ifov','S',8)
     polyw.field('pixels','F',10)
     polyw.field('vehicle','C',20)
     polyw.field('units','C',10)
@@ -65,7 +65,7 @@ def planOutlineFromCoords(fname,regions,alt,approach,bearing,sidelap,
             alt,
             approach,
             bearing,
-            sidelap,
+            sidelap*100,
             inst.name,
             inst.frame,
             inst.fieldOfView,

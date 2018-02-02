@@ -1,8 +1,7 @@
-
 var map;
 var searchBox;
 var resetBounds = false;
-var inDrawMode = false;
+var MODE = 'pan';
 var loadFromDrawing = true;
 var UNITS = "US";
 var noFileLoadedText;
@@ -105,9 +104,9 @@ var userDrawnRegion = {
             strokeOpacity:0.8,
             strokeWeight:2,
             fillColor: '#0000ff',
-            fillOpacity: (inDrawMode)?0.35:0,
-            draggable: inDrawMode,
-            editable: inDrawMode
+            fillOpacity: (MODE=='draw')?0.35:0,
+            draggable: MODE=='draw',
+            editable: MODE=='draw'
         });
         newPoly.setMap(map);
         this.closeVertices(undefined,newPoly,name);
@@ -137,8 +136,15 @@ var userDrawnRegion = {
         my_label.select();
         
         newPoly.addListener('rightclick',function(event){
-            if(!inDrawMode) return;
+            if(MODE=='pan') return;
             //right click the area to delete it
+            newPoly.name_label.parent().remove();
+            newPoly.setMap(null);
+            self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
+            if(self.drawnAreas.length==0) external.setHome(null);
+        });
+        newPoly.addListener('dblclick',function(event){
+            if(MODE!='erase') return;
             newPoly.name_label.parent().remove();
             newPoly.setMap(null);
             self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
@@ -365,7 +371,7 @@ function initMap() {
     //if we're in draw mode, double clicking should add a vertex rather than
     //zooming in the map
     map.addListener('dblclick',function(event){
-        if(inDrawMode){
+        if(MODE=='draw'){
             console.log(event.latLng.lat(),event.latLng.lng());
             userDrawnRegion.addVertex(event.latLng);
         } else {
@@ -418,6 +424,10 @@ var createPathCallback= function(coords,bounds,dist,speed,pxsize,scanlines){
     resetHome=true;
 }
 
+var createPathFailedCallback = function(){
+    alert("Scan Region too large to compute. Please select a smaller region.");
+}
+
 var loadFileCallback = function(coords,vehicle,alt,bearing,sidelap,
                                 overshoot,fov,ifov,px,s_name,p_names){
     if(UNITS=='US'){
@@ -450,12 +460,12 @@ var generatePath = function(){
     if(!loadFromDrawing && $('#infile').html() == noFileLoadedText) return;
     var coords = (loadFromDrawing)?userDrawnRegion.getCoords():false;
     if(coords) external.setNames(userDrawnRegion.getNames());
-    external.createPath(coords,createPathCallback);
+    external.createPath(coords,createPathCallback,createPathFailedCallback);
 }
 
 var toggle_draw_mode = function(){
-    if(!inDrawMode){
-        inDrawMode = true;
+    if(MODE=='pan'){
+        MODE = 'draw';
         loadFromDrawing = true;
         $('#generate,#save,#infile').prop('disabled',true);
         $('#pac-input').prop('disabled',false);
@@ -466,7 +476,7 @@ var toggle_draw_mode = function(){
              disableDoubleClickZoom: true
         });
     } else {
-        inDrawMode = false;
+        MODE = 'pan';
         $('#generate,#save,#infile').prop('disabled',false);
         $('#start_draw').html("Draw Area");
         $('#on-map-draw').html("&#128393;");

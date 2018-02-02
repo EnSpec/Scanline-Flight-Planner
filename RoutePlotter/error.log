@@ -195,3 +195,16 @@ UnboundLocalError: local variable 'DIALOGS_ALLOWED' referenced before assignment
     waiter.acquire()
 KeyboardInterrupt
 
+
+[2018-02-02 15:04:11] Traceback (most recent call last):
+  File "v8function_handler.pyx", line 42, in cefpython_py36.V8FunctionHandler_Execute (cefpython_py36.cpp:98999)
+  File "gui.py", line 216, in createPath
+    region.findScanLines()
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 548, in findScanLines
+    new_coords = sa.findScanLines()[1:]
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 342, in findScanLines
+    parallel_dir1,self._perimeter[2],first_point)[::first_traverse]
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 270, in _findIntersectionsInDirection
+    raise ScanLineDensityError
+ScanArea.ScanLineDensityError
+

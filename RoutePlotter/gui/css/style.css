@@ -11,7 +11,7 @@ h4{
 }
 
 .on-map-icon{
-    font-size:18px;
+    font-size:16px;
     position:absolute;
     border-radius:2px;
     background-color:white;
@@ -31,7 +31,7 @@ h4{
     color:rgb(40,40,40);
 }
 
-#on-map-draw{
+#on-map-draw,#on-map-erase{
     padding-right:0.25em;
     border-right: 1px solid #EEE;
 }
@@ -153,7 +153,7 @@ h4{
 }
 
 .route-name-in{
-    width:100%;
+    width:11em;
     font-family:monospace;
     margin-bottom:0.25em;
 }

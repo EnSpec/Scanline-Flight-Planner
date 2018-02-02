@@ -17,6 +17,9 @@ except ImportError:
     from . import WaypointParse
 
 
+#raise this if a set of paramters would cause too many scan lines to generate
+class ScanLineDensityError(Exception):
+    pass
 
 class Edge(object):
     """The representation of a single edge of a ScanArea"""
@@ -105,6 +108,7 @@ class ScanArea(object):
     """Represents a single, continuous area of land to be scanned.
     Stored internally as a list of coordinates
     """
+    MAX_LINES = 300
     def __init__(self,home,perimeter,spectrometer=None,alt = None,bearing=None,
             vehicle='quadcopter',overshoot=0,name=None, 
             find_scanline_bounds=False):
@@ -254,13 +258,24 @@ class ScanArea(object):
         found_intersect = True
         
         dir_coords = [start]
+
+        #check to make sure we're not going to be creating too many lines
+        max_point = llmath.atDistAndBearing(curr_point,
+                self._travel_width*self.MAX_LINES,direction)
+        for t_dir in self._travel_dir,self._opp_dir:
+            for edge in self._edges:
+                intersect = edge.intersection(max_point,t_dir)
+                if intersect:
+                    #there will be too many lines in the area, throw an error
+                    raise ScanLineDensityError
+
         while found_intersect:
             #don't check the leading edge
             new_points = []
             for t_dir in self._travel_dir,self._opp_dir:
                 for edge in self._edges:
                     intersect = edge.intersection(curr_point,t_dir)
-                    if intersect:# and len(new_points) < 2:
+                    if intersect:
                         new_points.append(intersect['point'])
                         found_intersect = True
             
@@ -600,6 +615,7 @@ class ScanRegion(object):
             self.findScanLines()
         names = [a.name for a in self.scanAreas]
         perims = [a._perimeter for a in self.scanAreas]
+        print(self._spectrometer._name)
         SHPParse.planOutlineFromCoords(fname,perims,self._alt,self._overshoot,
                 self._bearing,self._sidelap,self._spectrometer,names,
                 self._vehicle,units)
@@ -608,7 +624,9 @@ class ScanRegion(object):
     def fromProjectShapeFile(Cls,shp_fname,home=None):
         coords = SHPParse.findPolyCoords(shp_fname)
         meta = SHPParse.findMeta(shp_fname)
-        print(meta)
+        print(meta['inst'][0])
+        if 'sidelap' in meta:
+            meta['sidelap'] = [s/100. for s in meta['sidelap']]
         try:
             spectrometer = Spectrometer.spectrometerByName(meta['inst'][0])()
         except:
