@@ -9,6 +9,16 @@ h4{
     background:silver;
     border-radius:2px;
 }
+h4 > a{
+    position:absolute;
+    right:1em;
+    text-decoration:none;
+    color:rgb(102,102,102);
+}
+h4 > a:hover{
+    text-decoration:none;
+    color:rgb(40,40,40);
+}
 
 .on-map-icon{
     font-size:16px;
@@ -157,17 +167,36 @@ h4{
     font-family:monospace;
     margin-bottom:0.25em;
 }
+
+.route-name-li > a{
+    text-decoration:none;
+    color:rgb(102,102,102);
+}
+.route-name-li > a:hover{
+    cursor:pointer;
+    text-decoration:none;
+    color:rgb(120,0,0);
+}
+
 #darken{
     position: absolute;
     left:0%;
     top:0%;
+    bottom:0%;
     width:100%;
     display:none;
     z-index: 998;
     background-color: rgba(0,0,0,.7);
 }
-#help{
+#draw-help{
+    position: absolute;
+    display:none;
+    left:16em;
+    right:16em;
+    top:4em;
+    bottom:4em;
     z-index: 999;
     border-radius:5px;
     background-color: lightgray;
+    overflow-y:scroll;
 }

@@ -12,40 +12,63 @@
 </head>
 <body>
     <div id="darken">
-        <div class="container">
-            <div id="help" class="row" style="margin:5px">
-                <div class="col-12" style="padding-top:5px">
-                    <h4>Drawning Help</h4>
-                </div>
-                    <div class="col-md-4">
-                        <h5>Adding a Scan Area:</h5>
-                        <img style="width:100%;padding-bottom:5px" src="img/start_poly.png"/>
-                        <p>After clicking <button>Draw Area</button>
-                        , click on the map to place the vertices of your desired
-                        scan area.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Modifying Scan Areas:</h5>
-                        <img style="width:100%;padding-bottom:5px" src="img/one_poly.png"/>
-                        <p>Click on the the starting vertex again to complete 
-                        the scan area. You can click and drag a completed area
-                        to move it or right click it to delete it. Double click
-                        on the map to begin placing another scan area.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Completing Scan Areas:</h5>
-                        <img style="width:100%;padding-bottom:5px" src="img/done.png"/>
-                        <p>Once you have added all desired scan areas,
-                        click <button>Finish Drawing</button>. A flight path
-                        will automatically be generated through the scan areas.
-                        The route can be adjusted via the control panel at the 
-                        bottom of the page.
-                        </p>
-                    </div>
-                  </div>
-                  </div>
-            </div>
+    </div>
+    <div id="draw-help" style="margin:5px">
+        <div style="padding-top:5px">
+            <h4>Drawing Help</h4>
         </div>
+        <table style="width:100%">
+          <tbody>
+            <tr>
+                <td style="width:33%"><h5>Adding a Scan Path</h5></td>
+            </tr>
+            <tr>
+                <td>
+                    <img style="width:100%;padding-bottom:5px" src="img/start_poly.png"/>
+                </td>
+                <td>
+                    <p>After clicking <button>Draw Area</button>
+                    , click on the map to place the vertices of your desired
+                    scan area.</p>
+                </td>
+            </tr>
+            <tr>
+                <td><h5>Modifying a Scan Path</h5></td>
+            </tr>
+            <tr>
+                <td>
+                    <img style="width:100%;padding-bottom:5px" src="img/one_poly.png"/>
+                </td>
+                <td>
+                    <p>Click on the the starting vertex again to complete 
+                    the area. It will be added to the <strong>Scan Paths</strong> menu,
+                    where it can be renamed or deleted. Double click
+                    on the map to begin placing another scan path.</p>
+                </td>
+            </tr>
+            <tr>
+                <td><h5>Completing a Scan Path</h5></td>
+            </tr>
+            <tr>
+                <td>
+                    <img style="width:100%;padding-bottom:5px" src="img/done.png"/>
+                </td>
+                <td>
+                <p>Once you have added all desired scan areas,
+                  click <button>Finish Drawing</button>. A flight path
+                  will automatically be generated through the scan areas.
+                  The route can be adjusted via the <strong>Scan Parameters</strong> menu.
+                </p>
+                    <p>Click on the the starting vertex again to complete 
+                    the area. It will be added to the <strong>Scan Paths</strong> menu,
+                    where it can be renamed or deleted. Double click
+                    on the map to begin placing another scan path.</p>
+                </td>
+            </tr>
+          </tbody>
+        </table>
+          </div>
+      </div>
     </div>
     <div class="menu" id="menubar">
         <a href='#' id="file-mbar" class='mbar-item'>File</a>
@@ -70,7 +93,7 @@
     <div class="menu mbar-drop" id="help-mbar-drop">
         <p><a href='#'>Configuration Help</a></p>
         <p><a href='#'>Scan Parameters Help</a></p>
-        <p><a href='#'>Drawing Tools Help</a></p>
+        <p><a id='show-draw-help' href='#'>Drawing Tools Help</a></p>
         <p><a href='#'>Scan Area Help</a></p>
     </div>
     <div id="map-panel">
@@ -83,12 +106,12 @@
     </div>
     <div id="poly-list-panel">
       <div class="content">
-            <h4>Drawing Tools</h4>
+            <h4>Drawing Tools <a href='#' id='info-draw'>&#x1f6c8;</a></h4>
             <span><button id="start_draw"style="width:6em">Draw Area</button>
             <span><button id="erase"style="width:6em">Delete</button>
               <!--a id="summon_help" href='#'> (Help)<br></a-->
             </span>
-            <h4>Save Path</h4>
+            <h4>Save Path <a href='#' id='info-save'>&#x1f6c8;</a></h4>
 	    <span>
               <button id="save_native"class="text-center" style="width:6em">Save</button>
               <button id="load"class="text-center" style="width:6em">Load</button>
@@ -102,14 +125,14 @@
 	      <br>
 	    </span>
             <button id="save"class="text-center" style="width:6em">Export</button>
-            <h4>Scan Paths</h4>
+            <h4>Scan Paths <a href='#' id='info-paths'>&#x1f6c8;</a></h4>
             <ul id="drawn-paths">
 
             </ul>
       </div>
     </div>
     <div id="control-panel">
-        <h4>Flight Settings</h4>
+        <h4>Flight Settings <a href='#' id='info-settings'>&#x1f6c8;</a></h4>
             <span>
                 Vehicle:<br>
                 <select id="vehicle"style="width:100%">
@@ -128,7 +151,7 @@
                     <label><input id="metric" type="radio" name="units">Metric</label>
                 </form>
             </span>
-            <h4>Spectrometer</h4>
+            <h4>Spectrometer <a href='#' id='info-spectrometer'>&#x1f6c8;</a></h4>
             <table><tbody>
               <tr>
                 <td>FOV (&deg;):</td>
@@ -158,7 +181,7 @@
                     <option>Norsk Elektro Optikk HySpex</option>
                 </select>
             <br></span>
-            <h4>Scan Parameters</h4>
+            <h4>Scan Parameters <a href='#' id='info-parameters'>&#x1f6c8;</a></h4>
             <table><tbody>
             <tr>
                 <td id="alt_label">Altitude (ft):</td>
@@ -176,7 +199,7 @@
                 <td>Sidelap (%):</td><td><input type="text" style="width:3em" id="sidelap"value=20></td>
             </tr> 
             </tbody></table>
-            <h4>Flight Stats</h4>
+            <h4>Flight Stats <a href='#' id='info-stats'>&#x1f6c8;</a></h4>
             <table><tbody>
             <tr>
                 <td id="dist_label">Distance (mi):</td>

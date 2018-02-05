@@ -1,6 +1,6 @@
-const ROUTE_NAME_LI = "<li class='route-name-li'> "+
-"<input id='route-name-{}' class='route-name-in' type='text'>"+
-"<span class='route-li-delete'> &#x274C;</span>"+
+const ROUTE_NAME_LI = "<li id='route-name-{}' class='route-name-li'> "+
+"<input class='route-name-in' type='text'>"+
+"<a class='route-li-delete'> &#x274C;</a>"+
 "</li>";
 
 var greatest_id = 0;
@@ -9,8 +9,8 @@ var addRouteLi = function(id){
         greatest_id+=1;
         id=greatest_id;
     }
-    $('#drawn-paths').append(ROUTE_NAME_LI.replace('{}',id).replace('{}',id));
-    $('#route-name-'+id).val('Path '+id);
+    $('#drawn-paths').append(ROUTE_NAME_LI.replace('{}',id));
+    $('#route-name-'+id + ' > input').val('Path '+id);
     return $('#route-name-'+id);
 };
 
@@ -45,9 +45,20 @@ $(document).ready(function(){
             my_dropdown.addClass('mbar-drop-showing');
         }
     });
-    $('.mbar-drop a').click(function(){
-        $(this).parent().removeClass('mbar-drop-showing');
+    $('.mbar-drop').find('a').click(function(){
+        $(this).parent().parent().removeClass('mbar-drop-showing');
 
+    });
+
+    $('#show-draw-help,#info-draw').click(function(){
+        $('#darken').show();
+        $('#draw-help').show();
+
+    });
+    //lazy implement modals
+    var help_menus = ['#darken','#draw-help'];
+    $(help_menus.join(',')).click(function(){
+        $(help_menus.join(',')).hide();
     });
 
 });

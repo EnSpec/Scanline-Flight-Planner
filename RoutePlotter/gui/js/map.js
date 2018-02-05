@@ -127,7 +127,8 @@ var userDrawnRegion = {
         var self = this;
 
         var my_label = addRouteLi();
-        my_label.mouseenter(function(){ self.highlight(newPoly); });
+        console.log(my_label);
+        my_label.mouseenter(function(){ self.highlight(newPoly);});
         my_label.mouseleave(function(){ self.unhighlight(newPoly); });
         if(name)
             my_label.val(name);
@@ -135,14 +136,23 @@ var userDrawnRegion = {
         my_label.focus();
         my_label.select();
         
-        newPoly.addListener('rightclick',function(event){
-            if(MODE=='pan') return;
-            //right click the area to delete it
-            newPoly.name_label.parent().remove();
+        var removeMe = function(event){
+            //remove the poly from the map and splice it from the poly list
+            console.log("Goodbye, world!");
+            newPoly.name_label.remove();
             newPoly.setMap(null);
             self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
-            if(self.drawnAreas.length==0) external.setHome(null);
+            if(self.drawnAreas.length==0){
+                self.hideScanLines();
+                external.setHome(null);
+            }
+        }
+        my_label.find('a').eq(0).click(function(){
+            removeMe();
+            if(MODE=='pan')
+                generatePath();
         });
+
         newPoly.addListener('dblclick',function(event){
             if(MODE!='erase') return;
             newPoly.name_label.parent().remove();
@@ -163,7 +173,7 @@ var userDrawnRegion = {
     },
 
     highlight:function(area){
-        area.name_label.addClass('highlighted');
+        area.name_label.find('input').eq(0).addClass('highlighted');
         area.setOptions({
             strokeColor:'#0000aa',
             strokeWeight:4,
@@ -172,7 +182,7 @@ var userDrawnRegion = {
     },
     
     unhighlight:function(area){
-        area.name_label.removeClass('highlighted');
+        area.name_label.find('input').eq(0).removeClass('highlighted');
         area.setOptions({
             strokeColor:'#0000ff',
             strokeWeight:2,
@@ -195,7 +205,7 @@ var userDrawnRegion = {
     },
     getNames: function(){
         return _.map(this.drawnAreas,function(area){
-            return area.name_label.val();
+            return area.name_label.find('input').eq(0).val();
         });
     },
     clearDrawing:function(){
@@ -208,9 +218,8 @@ var userDrawnRegion = {
         self.centerPlus.setMap(null);
 
     },
-    enterDrawMode:function(){
-        if(scanPath) scanPath.setMap(null);
-        if(homeMarker) homeMarker.setMap(null);
+
+    hideScanLines:function(){
         if(scanLines.length)_.each(scanLines,(s)=>s.setMap(null));
         if(scanLineBounds.length)_.each(scanLineBounds,(s)=>s.setMap(null));
         _.each(this.drawnAreas,function(area){
@@ -220,9 +229,13 @@ var userDrawnRegion = {
                 editable:true
             });
         });
+    },
+    enterDrawMode:function(){
+        if(scanPath) scanPath.setMap(null);
+        if(homeMarker) homeMarker.setMap(null);
+        this.hideScanLines();
         this.drawingManager.setMap(map);
         this.drawingManager.setOptions({drawingMode:'polygon'});
-
     },
     exitDrawMode:function(){
         //this.closeVertices();
@@ -416,7 +429,6 @@ var createPathCallback= function(coords,bounds,dist,speed,pxsize,scanlines){
         if($('#vehicle').val()=='quadcopter')
             setHomeMarker(coords[0]);
         if(resetBounds){
-            console.log("HHHHH");
             setBoundBox(bounds);
             resetBounds=false;
         }
@@ -570,15 +582,8 @@ $(document).ready(function(){
     $('#summon_help').click(function(){
         $('#darken').height($(window).height());
         $('#darken').show();
-        $(window).resize(function(){
-            $('#darken').height($(this).height());
-        });
     });
 
-    $('#darken').click(function(){
-        $(this).hide();
-        $(window).unbind('resize');
-    });
 
 
     $('#us').click(function(){
