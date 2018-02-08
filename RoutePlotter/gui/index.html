@@ -13,6 +13,172 @@
 <body>
     <div id="darken">
     </div>
+    <div id="settings-help" style="margin:5px">
+        <div style="padding-top:5px">
+            <h4>Settings Help</h4>
+        </div>
+        <table style="width:100%">
+          <tbody>
+              <tr>
+                  <td>
+                      <p>The Flight Settings Panel contains configuration options for the flight vehicle,
+                      and location, as well as display units.
+                      </p>
+                      <p>
+                      <strong>Vehicle</strong> 
+                      can be specified as either Full-Scale or Quadcopter. Quadcopter mode displays the 
+                      flight path as a continuous line, and allows you to set a takeoff/landing location.
+                      Full-Scale airplane mode displays the flight path as a series of straight lines.
+                      </p>
+                      <p>
+                      <strong>Location</strong> 
+                      is identical in functionality to the Google Earth search bar, and
+                      can be used to quickly find locations on the map.
+                      </p>
+                      <p>
+                      <strong>Units</strong> can be specified as either US (feet, miles, knots), 
+                      or metric (meters, kilometers, meters per second)
+                      </p>
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+    
+    <div id="spectrometer-help" style="margin:5px">
+        <div style="padding-top:5px">
+            <h4>Spectrometer Help</h4>
+        </div>
+        <table style="width:100%">
+          <tbody>
+              <tr>
+                  <td>
+                      <p>The Spectrometer Panel contains configuration options for the flight spectrometer.
+                      </p>
+                      <p>
+                      <strong>FOV</strong> specifies the lateral field of view for the spectrometer. 
+                      </p>
+                      <p>
+                      <strong>Cross-FOV</strong>
+                      specifies the cross field of view for the spectrometer. This, 
+                      along with the Frame parameter, is used to determine the 
+                      flight velocity in <strong>Flight Stats</strong>. Flight velocity is given
+                      such that the scan will produce square pixels.
+                      </p>
+                      <p>
+                      <strong>Pixels</strong> is the number of scan line pixels for the spectrometer.
+                      </p>
+                      <p>
+                      <strong>Frame</strong> is the duration of a single scan. It is used to determine the
+                      flight velocity (see Cross-FOV). Spectrometers usually support a range of scan durations.
+                      </p>
+                      <strong>Presets</strong> Can be used to select from a number of known spectrometers.
+                      The other fields in the panel will be updated to reflect your choice.
+                      </p>
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+
+    <div id="parameters-help" style="margin:5px">
+        <div style="padding-top:5px">
+            <h4>Parameters Help</h4>
+        </div>
+        <table style="width:100%">
+          <tbody>
+              <tr>
+                  <td>
+                      <p>The Scan Parameters panel contains a variety of options to fine-tune your scan paths.
+                      </p>
+                      <strong>Altitude</strong> specifies the altitude above ground level that the flight
+                      vehicle will fly. Higher altitudes result in wider scan pathsm and lower
+                      spatial resolution.
+                      </p>
+                      <p>
+                      <strong>Approach</strong>
+                      specifies the distance beyond the actual scan area that the path will extend.
+                      For a quadcopter, this can usually be set to a small value, but for an airplane
+                      a larger value can give a pilot more time to align their flight path.
+                      </p>
+                      <p>
+                      <strong>Bearing</strong> is the angle at which scan lines will pass through the scan
+                      area. It is given relative to North.
+                      </p>
+                      <p>
+                      <strong>Sidelap</strong> is the lateral overlap between scan paths.
+                      </p>
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+
+    <div id="stats-help" style="margin:5px">
+        <div style="padding-top:5px">
+            <h4>Stats Help</h4>
+        </div>
+        <table style="width:100%">
+          <tbody>
+              <tr>
+                  <td>
+                      <p>The Flight Stats panel contains computed metadata about your scan paths.
+                      </p>
+                      <strong>Distance</strong> is the sum of the length of the generated scan lines,
+                      plus the distance from one scan line to the next.
+                      </p>
+                      <p>
+                      <strong>Velocity</strong> is the velocity that the flight vehicle would need to
+                      travel at to produce a scan with square pixels (such that the distance covered
+                      during the duration of a single scan is the same as the lateral resolution of the
+                      spectrometer). See the help page for <strong>Spectrometer</strong> for more
+                      information on fine-tuning this parameter.
+                      </p>
+                      <p>
+                      <strong>Pixel Size</strong> is the width of a single pixel on the ground. This is a 
+                      function of the flight altitude and spectrometer resolution.
+                      </p>
+                      <p>
+                      <strong>Duration</strong> is the time it would take the scan vehicle to travel the 
+                      computed path at the computed velocity.
+                      </p>
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+
+    <div id="stats-help" style="margin:5px">
+        <div style="padding-top:5px">
+            <h4>Save Help</h4>
+        </div>
+        <table style="width:100%">
+          <tbody>
+              <tr>
+                  <td>
+                      <p>The Save Path panel contains options for saving your scan paths to 
+                      other useful formats.
+                      </p>
+                      The <strong>Save</strong> and <strong>Load</strong> buttons can be used to save/load
+                      your entire project from a shapefile. Using this feature, you can partially plan
+                      out a flight path, save it, and then edit it again later.
+                      </p>
+                      <p>
+                      <strong>Export As</strong> exports your scan path into formats that can be
+                      read by other applications. <strong>GPX</strong> files can be loaded into a Garmin
+                      GPS unit and used for navigation. <strong>SHP</strong> shapefiles can be viewed 
+                      by a variety of GIS programs. <strong>Waypoint</strong> files can be loaded into 
+                      APM Mission Planner and sent as instructions to a UAV.
+                      </p>
+                      <p><strong>Note:</strong> Paths saved via the export feature cannot be loaded back
+                      into Pushbroom Planner. To keep a permanent, editable version of your path,
+                      use the save feature.
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+
     <div id="draw-help" style="margin:5px">
         <div style="padding-top:5px">
             <h4>Drawing Help</h4>
@@ -29,7 +195,8 @@
                 <td>
                     <p>After clicking <button>Draw Area</button>
                     , click on the map to place the vertices of your desired
-                    scan area.</p>
+                    scan area. Draw mode can also be entered via the pencil icon at the top-left
+                    of the map.</p>
                 </td>
             </tr>
             <tr>
@@ -55,14 +222,10 @@
                 </td>
                 <td>
                 <p>Once you have added all desired scan areas,
-                  click <button>Finish Drawing</button>. A flight path
+                  click <button>Finish</button>. A flight path
                   will automatically be generated through the scan areas.
                   The route can be adjusted via the <strong>Scan Parameters</strong> menu.
                 </p>
-                    <p>Click on the the starting vertex again to complete 
-                    the area. It will be added to the <strong>Scan Paths</strong> menu,
-                    where it can be renamed or deleted. Double click
-                    on the map to begin placing another scan path.</p>
                 </td>
             </tr>
           </tbody>
@@ -100,7 +263,6 @@
         <div id="map"></div>
         <div class="on-map-icon" id="edit-btn">
             <a id='on-map-draw' href='#'>&#128393;</a>
-            <a id='on-map-erase' href='#'>&#x274C;</a>
             <a id='on-map-save' href='#'>&#128190;</a>
         </div>
     </div>
@@ -108,7 +270,6 @@
       <div class="content">
             <h4>Drawing Tools <a href='#' id='info-draw'>&#x1f6c8;</a></h4>
             <span><button id="start_draw"style="width:6em">Draw Area</button>
-            <span><button id="erase"style="width:6em">Delete</button>
               <!--a id="summon_help" href='#'> (Help)<br></a-->
             </span>
             <h4>Save Path <a href='#' id='info-save'>&#x1f6c8;</a></h4>
