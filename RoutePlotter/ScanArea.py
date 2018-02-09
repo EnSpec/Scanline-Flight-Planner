@@ -590,7 +590,7 @@ class ScanRegion(object):
             self.findScanLines()
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
         WaypointParse.waypointsFromCoords(fname,
-                self._coords,self._alt,self._bearing,speed)
+                self.flattenCoords(),self._alt,self._bearing,speed)
 
     def toGPX(self,fname):
         if self._coords is None:

@@ -236,3 +236,35 @@ KeyboardInterrupt
     f.write(FMT.format(0,1,3,CMDS["Waypoint"],*[0]*4,alt=alt,**coords[0]))
 TypeError: format() argument after ** must be a mapping, not list
 
+
+[2018-02-09 14:23:45] Traceback (most recent call last):
+  File "gui.py", line 278, in <module>
+    main()
+  File "gui.py", line 265, in main
+    TkSaveThread(FILE_QUEUE)
+  File "gui.py", line 61, in TkSaveThread
+    region.toWayPoints(fname)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 593, in toWayPoints
+    self._coords,self._alt,self._bearing,speed)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\WaypointParse.py", line 20, in waypointsFromCoords
+    f.write(FMT.format(0,1,3,CMDS["Waypoint"],*[0]*4,alt=alt,**coords[0]))
+TypeError: format() argument after ** must be a mapping, not list
+
+
+[2018-02-09 16:15:36] Traceback (most recent call last):
+  File "gui.py", line 278, in <module>
+    main()
+  File "gui.py", line 265, in main
+    TkSaveThread(FILE_QUEUE)
+  File "gui.py", line 45, in TkSaveThread
+    region.toShapeFile(fname)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\ScanArea.py", line 607, in toShapeFile
+    self._coords,self.scanLineBoundBoxes,self._alt,speed)
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\SHPParse.py", line 95, in flightPlanFromCoords
+    line=coordDictListToCoord2DList(coords[4*i:4*i+4])
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\SHPParse.py", line 40, in coordDictListToCoord2DList
+    coords = list(map(lambda c:[c['lon'],c['lat'],alt],coord_dict_list))
+  File "C:\Users\westphall\Spectrometer_Routefinder\RoutePlotter\SHPParse.py", line 40, in <lambda>
+    coords = list(map(lambda c:[c['lon'],c['lat'],alt],coord_dict_list))
+TypeError: list indices must be integers or slices, not str
+

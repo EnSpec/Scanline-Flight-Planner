@@ -37,6 +37,7 @@ minus_url='http://maps.google.com/mapfiles/kml/paddle/red-square-lv.png';
 
 var userDrawnRegion = {
     drawnAreas: [],
+    deletedAreas: [], //more like goneAreas amirite?
     vertexMarkers: [],
     init:function(){
         //call this once map is initialized
@@ -84,8 +85,18 @@ var userDrawnRegion = {
         });
         google.maps.event.addListener(this.drawingManager,'overlaycomplete',
                 function(event){self.closeVertices(event)});
+
     },
 
+    undoDelete: function(){
+        if(this.deletedAreas.length == 0){
+            $('#undo_button').prop('disabled',true);
+        } else {
+            var poly_info = this.deletedAreas.pop();
+            this.closeVertices(undefined,poly_info[0],poly_info[1]);
+            poly_info[0].setMap(map);
+        }
+    },
     findCenter: function(){
         if(this.vertexMarkers.length < 3) return;
 
@@ -131,17 +142,20 @@ var userDrawnRegion = {
         my_label.mouseenter(function(){ self.highlight(newPoly);});
         my_label.mouseleave(function(){ self.unhighlight(newPoly); });
         if(name)
-            my_label.val(name);
+            my_label.find('input').eq(0).val(name);
         newPoly.name_label = my_label;
         my_label.focus();
         my_label.select();
         
         var removeMe = function(event){
             //remove the poly from the map and splice it from the poly list
+            $('#undo_button').prop('disabled',false);
             console.log("Goodbye, world!");
             newPoly.name_label.remove();
             newPoly.setMap(null);
             self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
+            self.deletedAreas.push([newPoly,
+                newPoly.name_label.find('input').eq(0).val()]);
             if(self.drawnAreas.length==0){
                 self.hideScanLines();
                 external.setHome(null);
@@ -513,6 +527,18 @@ $(document).ready(function(){
         });
     });
 
+    $(document).keydown(function(event){
+        if(event.ctrlKey && event.which == 90){
+            userDrawnRegion.undoDelete();
+            generatePath();
+        }
+    });
+    $('#undo,#undo_button').click(function(){
+        userDrawnRegion.undoDelete();
+        generatePath();
+
+    });
+
     //bind functions to buttons
     $('#clear_draw').click(function(){
         userDrawnRegion.clearDrawing();
@@ -545,6 +571,7 @@ $(document).ready(function(){
         generatePath();
     });
     $('#bearing').change(function(){
+        console.log("ch-ch-ch-ch-changes!");
         external.setBearing($(this).val());
         generatePath();
     });

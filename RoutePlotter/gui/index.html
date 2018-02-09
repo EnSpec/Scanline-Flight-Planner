@@ -13,7 +13,7 @@
 <body>
     <div id="darken">
     </div>
-    <div id="settings-help" style="margin:5px">
+    <div class="help-modal" id="settings-help" style="margin:5px">
         <div style="padding-top:5px">
             <h4>Settings Help</h4>
         </div>
@@ -39,13 +39,16 @@
                       <strong>Units</strong> can be specified as either US (feet, miles, knots), 
                       or metric (meters, kilometers, meters per second)
                       </p>
+                      <strong>Note:</strong> The vehicle selection feature is purely for visualization.
+                      To save your path for use by different vehicles, see <strong>Export As</strong>
+                      under the help listing for <strong>Save Path</strong>.
                   </td>
               </tr>
           </tbody>
         </table>
     </div>
     
-    <div id="spectrometer-help" style="margin:5px">
+    <div class="help-modal" id="spectrometer-help" style="margin:5px">
         <div style="padding-top:5px">
             <h4>Spectrometer Help</h4>
         </div>
@@ -81,7 +84,7 @@
         </table>
     </div>
 
-    <div id="parameters-help" style="margin:5px">
+    <div class="help-modal" id="parameters-help" style="margin:5px">
         <div style="padding-top:5px">
             <h4>Parameters Help</h4>
         </div>
@@ -114,7 +117,7 @@
         </table>
     </div>
 
-    <div id="stats-help" style="margin:5px">
+    <div class="help-modal" id="stats-help" style="margin:5px">
         <div style="padding-top:5px">
             <h4>Stats Help</h4>
         </div>
@@ -148,7 +151,28 @@
         </table>
     </div>
 
-    <div id="stats-help" style="margin:5px">
+    <div class="help-modal" id="paths-help" style="margin:5px">
+        <div style="padding-top:5px">
+            <h4>Save Help</h4>
+        </div>
+        <table style="width:100%">
+          <tbody>
+              <tr>
+                  <td>
+                      <p>The Scan Paths panel is used to rename and delete drawn scan paths.
+                      </p>
+                      <p>
+                      Mousing over an entry in the list will highlight the corresponding scan path
+                      on the map. Click the &#x274C; next to a path's entry to delete the path. 
+                      Names are used in GPX metadata.
+                      </p>
+                  </td>
+              </tr>
+          </tbody>
+        </table>
+    </div>
+
+    <div class="help-modal" id="save-help" style="margin:5px">
         <div style="padding-top:5px">
             <h4>Save Help</h4>
         </div>
@@ -179,7 +203,7 @@
         </table>
     </div>
 
-    <div id="draw-help" style="margin:5px">
+    <div class="help-modal" id="draw-help" style="margin:5px">
         <div style="padding-top:5px">
             <h4>Drawing Help</h4>
         </div>
@@ -241,12 +265,13 @@
     </div>
     <div class="menu mbar-drop" id="file-mbar-drop" >
         <p><a href='#'>Open Plan</a></p>
-        <p><a href='#'>Save Plan As...</a></p>
+        <p><a href='#'>Save Plan</a></p>
+        <p><a href='#'>Export Plan As Waypoints</a></p>
+        <p><a href='#'>Export Plan As Garmin GPX</a></p>
+        <p><a href='#'>Export Plan As Shapefile</a></p>
     </div>
     <div class="menu mbar-drop" id="edit-mbar-drop" >
-        <p><a href='#'>Change Display Units</a></p>
-        <p><a href='#'>Add Scan Areas</a></p>
-        <p><a href='#'>Remove Scan Areas</a></p>
+        <p><a id="undo" href='#'>Undo Path Delete</a></p>
     </div>
     <div class="menu mbar-drop" id="view-mbar-drop">
         <p><a href='#'>Zoom In</a></p>
@@ -254,10 +279,13 @@
         <p><a href='#'>Zoom Over Location...</a></p>
     </div>
     <div class="menu mbar-drop" id="help-mbar-drop">
-        <p><a href='#'>Configuration Help</a></p>
-        <p><a href='#'>Scan Parameters Help</a></p>
-        <p><a id='show-draw-help' href='#'>Drawing Tools Help</a></p>
-        <p><a href='#'>Scan Area Help</a></p>
+        <p><a id="show-help-settings" href='#'>Flight Settings Help</a></p>
+        <p><a id="show-help-spectrometer" href='#'>Spectrometer Help</a></p>
+        <p><a id="show-help-parameters" href='#'>Scan Parameters Help</a></p>
+        <p><a id="show-help-stats" href='#'>Flight Stats Help</a></p>
+        <p><a id='show-help-draw' href='#'>Drawing Tools Help</a></p>
+        <p><a id='show-help-save' href='#'>Save Paths Help</a></p>
+        <p><a id="show-help-paths" href='#'>Scan Paths Help</a></p>
     </div>
     <div id="map-panel">
         <div id="map"></div>
@@ -287,6 +315,7 @@
 	    </span>
             <button id="save"class="text-center" style="width:6em">Export</button>
             <h4>Scan Paths <a href='#' id='info-paths'>&#x1f6c8;</a></h4>
+            <button disabled id="undo_button" class="text-center" style="width:8em;">Undo Delete</button>
             <ul id="drawn-paths">
 
             </ul>

@@ -50,15 +50,23 @@ $(document).ready(function(){
 
     });
 
-    $('#show-draw-help,#info-draw').click(function(){
-        $('#darken').show();
-        $('#draw-help').show();
-
-    });
     //lazy implement modals
-    var help_menus = ['#darken','#draw-help'];
+    var help_menus = ['#draw-help','#spectrometer-help','#settings-help',
+    '#parameters-help','#stats-help','#save-help','#paths-help','#darken'];
+    var help_access = ['#show-help-draw,#info-draw',
+        '#show-help-spectrometer,#info-spectrometer',
+        '#show-help-settings,#info-settings',
+        '#show-help-parameters,#info-parameters','#show-help-stats,#info-stats',
+        '#show-help-save,#info-save','#show-help-paths,#info-paths'];
+
     $(help_menus.join(',')).click(function(){
         $(help_menus.join(',')).hide();
+    });
+    _.each(help_access,function(ids,idx){
+        $(ids).click(function(){
+            $('#darken').show();
+            $(help_menus[idx]).show();
+        })
     });
 
 });
