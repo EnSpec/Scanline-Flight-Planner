@@ -1,10 +1,15 @@
-var map;
-var searchBox;
-var resetBounds = false;
-var MODE = 'pan';
-var loadFromDrawing = true;
+var map; // the global google maps api map object
+var searchBox; // the global google maps searchbar object
+var resetBounds = false; //whether to set google maps bounds to newly drawn areas
+var MODE = 'pan'; //'pan' or 'draw';
 var UNITS = "US";
-var noFileLoadedText;
+
+
+/*
+ * The python side is implemented with a {lat,lon} dict, while google
+ * maps uses {lat,lng}. These functions convert between the two.
+ *
+ */
 var cleanPyCoords = function(c){
     //CEF sometimes converts coords to strings, make sure they're numbers
     return {lat:Number(c.lat),lng:Number(c.lon)};
@@ -22,6 +27,10 @@ var toPyCoords = function(latLng){
 
 
 
+/*
+ * Unit conversion functions. Imperial units used for display only.
+ */
+
 var km2mi = function(km){ return Number(km)*0.621371 }
 var mi2km = function(mi){ return Number(mi)/0.621371 }
 
@@ -31,37 +40,20 @@ var ft2m = function(feet){ return Number(feet)/3.28084 }
 var ms2kts = function(ms){ return Number(ms)*1.94384 }
 var kts2ms = function(kts){ return Number(kts)/1.94384 }
 
-vertex_url='http://maps.google.com/mapfiles/kml/shapes/placemark_circle.png';
-plus_url='http://maps.google.com/mapfiles/kml/paddle/grn-blank-lv.png';
-minus_url='http://maps.google.com/mapfiles/kml/paddle/red-square-lv.png';
 
+
+/*
+ * This object manages a collection of polygons created by the google maps
+ * drawing api
+ */
 var userDrawnRegion = {
-    drawnAreas: [],
-    deletedAreas: [], //more like goneAreas amirite?
-    vertexMarkers: [],
+    drawnAreas: [], // areas drawn by the user
+    deletedAreas: [], //keep track of deleted areas for undo feature
     init:function(){
         //call this once map is initialized
         var self=this;
-        this.vertexImage = new google.maps.MarkerImage(vertex_url,
-            new google.maps.Size(30,30),
-            new google.maps.Point(0,0),
-            new google.maps.Point(15,15)
-        );
-        this.minusImage = new google.maps.MarkerImage(minus_url,
-            new google.maps.Size(30,30),
-            new google.maps.Point(0,0),
-            new google.maps.Point(15,15)
-        );
-        this.centerPlus = new google.maps.Marker({
-            icon: new google.maps.MarkerImage(plus_url,
-                new google.maps.Size(30,30),
-                new google.maps.Point(0,0),
-                new google.maps.Point(15,15)
-            )
-        });
-        this.centerPlus.addListener('dblclick',function(){
-            self.closeVertices();
-        });
+
+        //set up a google maps drawingManager to draw blue polygons
         this.drawingManager = new google.maps.drawing.DrawingManager({
             drawingMode: google.maps.drawing.OverlayType.MARKER,
             drawingControl: true,
@@ -80,14 +72,19 @@ var userDrawnRegion = {
             },
         });    
         var self = this;
+
         google.maps.event.addListener(map,'click',function(){
             self.drawingManager.setOptions({drawingMode:'polygon'});
         });
+        //bind the completion of a polygon drawing to self.closeVertices
         google.maps.event.addListener(this.drawingManager,'overlaycomplete',
                 function(event){self.closeVertices(event)});
 
     },
 
+    /*
+     * Pop the latest deleted polygon and add it back to drawnAreas
+     */
     undoDelete: function(){
         if(this.deletedAreas.length == 0){
             $('#undo_button').prop('disabled',true);
@@ -97,17 +94,11 @@ var userDrawnRegion = {
             poly_info[0].setMap(map);
         }
     },
-    findCenter: function(){
-        if(this.vertexMarkers.length < 3) return;
 
-        var coords=_.map(this.vertexMarkers,(m)=>toPyCoords(m.getPosition()));
-        var self = this;
-        external.centerOfPoints(coords,function(center){
-            self.centerPlus.setMap(map);
-            self.centerPlus.setPosition(cleanPyCoords(center));
-        });
-
-    },
+    /*
+     * When loading from a file, we recieve a list of coordinates. Turn that 
+     * list into a polygon and add it to drawnAreas
+     */
     addPolyFromCoords: function(coords,name){
         var newPoly = new google.maps.Polygon({
             paths:coords,
@@ -123,11 +114,14 @@ var userDrawnRegion = {
         this.closeVertices(undefined,newPoly,name);
     },
 
+    /*
+     * Bind functions to a newly drawn polygon and add it to drawnAreas
+     */
     closeVertices: function(event,newPoly,name){
-        //add the newly drawn poly to our list so that we can pass it to
-        //gui.py once the user's done drawing
+        //if newPoly wasn't passed as a parameter, try to get it from event
         if(newPoly === undefined)
             newPoly = event.overlay;
+
         //sometimes a poly doesn't get completed, in that case delete it
         if(newPoly.getPath().getLength() < 3){
             newPoly.setMap(null);
@@ -137,20 +131,22 @@ var userDrawnRegion = {
         newPoly.setOptions({zIndex:1999});
         var self = this;
 
+        //add a name box for the new polygon in the sidebar
         var my_label = addRouteLi();
-        console.log(my_label);
         my_label.mouseenter(function(){ self.highlight(newPoly);});
         my_label.mouseleave(function(){ self.unhighlight(newPoly); });
         if(name)
             my_label.find('input').eq(0).val(name);
         newPoly.name_label = my_label;
+        //move the cursor into the name box for easy typing
         my_label.focus();
         my_label.select();
         
+        /* remove newPoly from the map and add it to the deletedAreas list
+         */
         var removeMe = function(event){
             //remove the poly from the map and splice it from the poly list
             $('#undo_button').prop('disabled',false);
-            console.log("Goodbye, world!");
             newPoly.name_label.remove();
             newPoly.setMap(null);
             self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
@@ -161,19 +157,15 @@ var userDrawnRegion = {
                 external.setHome(null);
             }
         }
+
+        //bind removeMe to the 'X' button next to the poly's name box
         my_label.find('a').eq(0).click(function(){
             removeMe();
             if(MODE=='pan')
                 generatePath();
         });
 
-        newPoly.addListener('dblclick',function(event){
-            if(MODE!='erase') return;
-            newPoly.name_label.parent().remove();
-            newPoly.setMap(null);
-            self.drawnAreas.splice(self.drawnAreas.indexOf(newPoly),1);
-            if(self.drawnAreas.length==0) external.setHome(null);
-        });
+        //turn the polygon darker and highlight its label on mouseover
         newPoly.addListener('mouseover',function(event){
             self.highlight(newPoly);
         });
@@ -181,11 +173,15 @@ var userDrawnRegion = {
             self.unhighlight(newPoly); 
         });
 
+        //set the drawingManager back to pan mode
         this.drawingManager.setOptions({drawingMode:null});
         this.drawnAreas.push(newPoly);
     
     },
 
+    /*
+     * Turn a polygon darker and make its outline thicker
+     */
     highlight:function(area){
         area.name_label.find('input').eq(0).addClass('highlighted');
         area.setOptions({
@@ -195,6 +191,9 @@ var userDrawnRegion = {
         });
     },
     
+    /*
+     * Turn a polygon back to unhighlighted style
+     */
     unhighlight:function(area){
         area.name_label.find('input').eq(0).removeClass('highlighted');
         area.setOptions({
@@ -203,6 +202,11 @@ var userDrawnRegion = {
             fillColor: '#0000ff',
         });
     },
+
+    /*
+     * Return a nested list of the coordinates of each polygon in drawnAreas
+     * Coordinates are converted to python format
+     */
     getCoords: function(){
         var self = this;
         var coords = [];
@@ -217,22 +221,20 @@ var userDrawnRegion = {
 
         return coords;
     },
+
+    /*
+     * Return a list of the value in the name box of each polygon in drawnAreas
+     */
     getNames: function(){
         return _.map(this.drawnAreas,function(area){
             return area.name_label.find('input').eq(0).val();
         });
     },
-    clearDrawing:function(){
-        var self = this;
-        _.each(self.vertexMarkers,(m)=>m.setMap(null));
-        self.vertexMarkers=[];
-        _.each(self.drawnAreas,(a)=>a.setMap(null));
-        self.drawnAreas=[];
-        self.vertexMarkers=[];
-        self.centerPlus.setMap(null);
 
-    },
 
+    /*
+     * hide each scanline while user is drawing
+     */
     hideScanLines:function(){
         if(scanLines.length)_.each(scanLines,(s)=>s.setMap(null));
         if(scanLineBounds.length)_.each(scanLineBounds,(s)=>s.setMap(null));
@@ -244,6 +246,10 @@ var userDrawnRegion = {
             });
         });
     },
+
+    /*
+     * hide scanlines and re-enable editing of polygons
+     */
     enterDrawMode:function(){
         if(scanPath) scanPath.setMap(null);
         if(homeMarker) homeMarker.setMap(null);
@@ -251,6 +257,10 @@ var userDrawnRegion = {
         this.drawingManager.setMap(map);
         this.drawingManager.setOptions({drawingMode:'polygon'});
     },
+
+    /*
+     * Make polygons uneditable
+     */
     exitDrawMode:function(){
         //this.closeVertices();
         _.each(this.drawnAreas,function(area){
@@ -260,10 +270,10 @@ var userDrawnRegion = {
                 editable:false
             });
         });
-        $('#infile').html(noFileLoadedText);
         this.drawingManager.setMap(null);
 
     },
+
     hasDrawnRegions: function(){
         return this.drawnAreas.length > 0;
     },    
@@ -272,8 +282,13 @@ var userDrawnRegion = {
 };
 
 
-var homeMarker;
-var resetHome = true;
+var homeMarker; //google maps marker, used to set starting location for uav
+var resetHome = true; //whether to move the home icon when the path is changed
+
+/*
+ * create a new home marker if one doesn't exist
+ */
+
 var setHomeMarker = function(latlng){
     if(homeMarker) homeMarker.setMap(null);
     homeMarker = new google.maps.Marker({
@@ -483,8 +498,7 @@ var loadFileCallback = function(coords,vehicle,alt,bearing,sidelap,
 
 var generatePath = function(){
     if(!($('#alt').val()&&$('#bearing').val())) return;
-    if(!loadFromDrawing && $('#infile').html() == noFileLoadedText) return;
-    var coords = (loadFromDrawing)?userDrawnRegion.getCoords():false;
+    var coords = userDrawnRegion.getCoords();
     if(coords) external.setNames(userDrawnRegion.getNames());
     external.createPath(coords,createPathCallback,createPathFailedCallback);
 }
@@ -492,7 +506,6 @@ var generatePath = function(){
 var toggle_draw_mode = function(){
     if(MODE=='pan'){
         MODE = 'draw';
-        loadFromDrawing = true;
         $('#generate,#save,#infile').prop('disabled',true);
         $('#pac-input').prop('disabled',false);
         $('#start_draw').html("Finish");
@@ -516,17 +529,6 @@ var toggle_draw_mode = function(){
 };
 
 $(document).ready(function(){
-    noFileLoadedText = $('#infile').html();
-    $('#infile').click(function(){
-        external.loadFile(function(file){
-            loadFromDrawing=false;
-            resetHome=true;
-            external.setHome(null);
-            $('#infile').html("File: "+file);
-            generatePath();
-        });
-    });
-
     $(document).keydown(function(event){
         if(event.ctrlKey && event.which == 90){
             userDrawnRegion.undoDelete();
@@ -540,10 +542,6 @@ $(document).ready(function(){
     });
 
     //bind functions to buttons
-    $('#clear_draw').click(function(){
-        userDrawnRegion.clearDrawing();
-        external.setHome(null);
-    });    
     $('#start_draw').click(toggle_draw_mode);
     $('#on-map-draw').click(toggle_draw_mode);
 

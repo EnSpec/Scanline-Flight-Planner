@@ -604,7 +604,7 @@ class ScanRegion(object):
             self.findScanLines()
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
         SHPParse.flightPlanFromCoords(fname,
-                self._coords,self.scanLineBoundBoxes,self._alt,speed)
+                self.flattenCoords(),self.scanLineBoundBoxes,self._alt,speed)
         
     def toProjectShapeFile(self,fname,units):
         """
