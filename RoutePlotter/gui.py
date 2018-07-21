@@ -228,6 +228,8 @@ class External(object):
     def savePath(self,fmt):
         if self._region is None:
             return
+        #names can be changed on the fly without regenerating a path
+        self._region._names = self._names
         FILE_QUEUE.put((self._region,fmt))
 
 def CefThread():

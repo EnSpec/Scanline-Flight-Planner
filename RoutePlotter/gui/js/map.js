@@ -135,6 +135,10 @@ var userDrawnRegion = {
         var my_label = addRouteLi();
         my_label.mouseenter(function(){ self.highlight(newPoly);});
         my_label.mouseleave(function(){ self.unhighlight(newPoly); });
+        //update extern's names automatically
+        my_label.change(function(){
+            external.setNames(userDrawnRegion.getNames());
+        });
         if(name)
             my_label.find('input').eq(0).val(name);
         newPoly.name_label = my_label;

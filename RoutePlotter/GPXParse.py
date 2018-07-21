@@ -91,7 +91,7 @@ def makeWayPoint(coord,alt,time,seq_no):
     timeElem.text = time
 
     nameElem = etree.SubElement(wayptElem,"name")
-    nameElem.text ="{}-{}-{}".format(alt,int(seq_no/4)+1,int(seq_no%4)+1)
+    nameElem.text ="{}-{}-{}".format(int(alt),int(seq_no/4)+1,int(seq_no%4)+1)
 
     symElem = etree.SubElement(wayptElem,"sym")
     if(seq_no in [1,2]):
@@ -108,7 +108,8 @@ def makeWayPoint(coord,alt,time,seq_no):
 
 
 
-def makeRoutePoint(coord,alt,time,seq_no):
+def makeRoutePoint(coord,alt,time,seq_no,name):
+    name = name.replace(' ','-')
     rteptElem = etree.Element("rtept",lat=str(coord['lat']),
             lon=str(coord['lon']))
 
@@ -116,7 +117,8 @@ def makeRoutePoint(coord,alt,time,seq_no):
     timeElem.text = time
 
     nameElem = etree.SubElement(rteptElem,"name")
-    nameElem.text ="{}-{}-{}".format(alt,int(seq_no/4)+1,int(seq_no%4)+1)
+    nameElem.text ="{}-{}-{}-{}".format(name,int(alt),int(seq_no/4)+1,
+            int(seq_no%4)+1)
 
     symElem = etree.SubElement(rteptElem,"sym")
     symElem.text="Navaid, "+["Blue","Green","Green","Blue"][seq_no%4]
@@ -126,14 +128,14 @@ def makeRoutePoint(coord,alt,time,seq_no):
     return rteptElem
 
 
-def makeRoute(alt,seq_nos):
+def makeRoute(alt,seq_nos,name):
     rteElem = etree.Element("rte")
 
-    seq1 = "{}-{}-{}".format(alt,int(seq_nos[0]/4)+1,int(seq_nos[0]%4)+1)
-    seq2 = "{}-{}-{}".format(alt,int(seq_nos[-1]/4)+1,int(seq_nos[-1]%4)+1)
+    seq1 = "{}-{}-{}".format(int(alt),int(seq_nos[0]/4)+1,int(seq_nos[0]%4)+1)
+    seq2 = "{}-{}-{}".format(int(alt),int(seq_nos[-1]/4)+1,int(seq_nos[-1]%4)+1)
     
     nameElem = etree.SubElement(rteElem,"name")
-    nameElem.text="{} to {}".format(seq1,seq2)
+    nameElem.text="{}: {} to {}".format(name,seq1,seq2)
 
     rteElem.append(fixedExtensions(RTE_EXTENSIONS,None))
 
@@ -146,7 +148,7 @@ def gpxtrx2gpxx(xml_string):
     idx=xml_string.index('gpxtrx')+1
     return''.join((xml_string[:idx],xml_string[idx:].replace('gpxtrx','gpxx')))
 
-def waypointsFromCoords(fname,areas,alt,bounds,times=None):
+def waypointsFromCoords(fname,areas,alt,bounds,names=[],times=None):
     """Take a list of coordinates and output a waypoint file that visits each
     point"""
     import sys
@@ -158,12 +160,12 @@ def waypointsFromCoords(fname,areas,alt,bounds,times=None):
 
     root.append(metadata(bounds,times[0]))
 
-    for coords in areas:
-        route = makeRoute(alt,[0,len(coords)])
+    for coords,name in zip(areas,names):
+        route = makeRoute(alt,[0,len(coords)],name)
 
         for i,coord in enumerate(coords):
             #root.append(makeWayPoint(coord,alt,times[i],i))
-            route.append(makeRoutePoint(coord,alt,times[i],i))
+            route.append(makeRoutePoint(coord,alt,times[i],i,name))
 
         root.append(route)
 

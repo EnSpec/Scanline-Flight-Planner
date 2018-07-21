@@ -286,3 +286,19 @@ TypeError: list indices must be integers or slices, not str
     coords = list(map(lambda c:[c['lon'],c['lat'],alt],coord_dict_list))
 TypeError: list indices must be integers or slices, not str
 
+
+[2018-07-21 17:21:02] Traceback (most recent call last):
+  File "gui.py", line 278, in <module>
+    main()
+  File "gui.py", line 265, in main
+    TkSaveThread(FILE_QUEUE)
+  File "gui.py", line 53, in TkSaveThread
+    region.toGPX(fname)
+  File "/home/mwestphall/MissionPlanner/Scanline-Flight-Planner/RoutePlotter/ScanArea.py", line 602, in toGPX
+    self._coords,self._alt,self._names,self.boundBox)
+  File "/home/mwestphall/MissionPlanner/Scanline-Flight-Planner/RoutePlotter/GPXParse.py", line 161, in waypointsFromCoords
+    root.append(metadata(bounds,times[0]))
+  File "/home/mwestphall/MissionPlanner/Scanline-Flight-Planner/RoutePlotter/GPXParse.py", line 74, in metadata
+    "maxlat":str(bounds[1]['lat']),
+TypeError: string indices must be integers
+

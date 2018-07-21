@@ -430,7 +430,8 @@ class ScanRegion(object):
     VEHICLES='quadcopter','fullscale'
     
     def __init__(self,home,spectrometer=None,alt = None,bearing=None,
-            vehicle='quadcopter',overshoot=0,find_scanline_bounds=False):
+            names=[],vehicle='quadcopter',overshoot=0,
+            find_scanline_bounds=False):
         self._home = home
         self._scanareas = []
         self._waypoints = []
@@ -441,6 +442,7 @@ class ScanRegion(object):
         self._coords = None
         self._overshoot = overshoot
         self._vehicle = 'quadcopter'
+        self._names = names
         self._find_bounds = find_scanline_bounds
 
     def addWayPoint(self,waypoint):
@@ -597,7 +599,7 @@ class ScanRegion(object):
             self.findScanLines()
         speed = self._spectrometer.squareScanSpeedAt(self._alt)
         GPXParse.waypointsFromCoords(fname,
-                self._coords,self._alt,self.boundBox)
+                self._coords,self._alt,self.boundBox,self._names)
 
     def toShapeFile(self,fname):
         if self._coords is None:
@@ -645,10 +647,10 @@ class ScanRegion(object):
         return spectrometer,coords,meta
 
     @classmethod
-    def from2DLatLonArray(Cls,coords,home=None,names=None,**kwargs):
+    def from2DLatLonArray(Cls,coords,home=None,names=[],**kwargs):
         print(coords)
         home = home or coords[0][0]
-        region = Cls(home,**kwargs)
+        region = Cls(home,names=names,**kwargs)
         for perimeter,name in zip(coords,names):
             region.addScanArea(ScanArea(home,perimeter,name = name ))
         return region

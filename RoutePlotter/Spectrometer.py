@@ -9,6 +9,9 @@ class Spectrometer(object):
         self._frame_pd = frame_pd
         self._name = name
 
+    def __repr__(self):
+        print("-- {} -- \nFOV: {}\nX-FOV: {}\nPixels: {}".format(
+            self._name,self._fov,self._ifov,self._px))
     def setFramePeriod(self,pd):
         self._frame_pd = pd
 
